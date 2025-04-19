@@ -6,20 +6,21 @@ import { connect } from "react-redux";
 import { setBreadcrumbItems } from "../../store/actions";
 import * as XLSX from "xlsx";
 import { Toaster, toast } from "sonner";
+import {BASE_URL} from '../../Service';
 
 const InventoryUpload = (props) => {
   document.title = "Products Table | Lexa - Responsive Bootstrap 5 Admin Dashboard";
 
-  // New states for Excel import functionality
+  
   const [showAddExcel, setShowAddExcel] = useState(false);
   const [excelFile, setExcelFile] = useState(null);
   const [excelData, setExcelData] = useState([]);
 
-  // New states for deletion confirmation modal
+ 
   const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
   const [selectedRowIndex, setSelectedRowIndex] = useState(null);
 
-  // New state to manage visibility of the fetch images button
+  
   const [showFetchImagesButton, setShowFetchImagesButton] = useState(false);
 
   const breadcrumbItems = [
@@ -32,10 +33,10 @@ const InventoryUpload = (props) => {
     props.setBreadcrumbItems("Products Table", breadcrumbItems);
   }, [showAddExcel]);
 
-  // Handlers for Excel import
+ 
   const handleShowExcelForm = () => {
     setShowAddExcel(true);
-    // Clear any previously imported Excel data
+   
     setExcelFile(null);
     setExcelData([]);
   };
@@ -49,16 +50,7 @@ const InventoryUpload = (props) => {
     setExcelFile(file);
   };
 
-  // 'brand_description' => 'sometimes|string',
 
-  // // Product validation
-  // 'category' => 'sometimes|string|max:50',
-
-  // // Inventory validation
-  // 'wholesale_price' => 'sometimes|numeric',
-  // 'date_purchased' => 'sometimes|date',
-  // 'date_sold' => 'sometimes|date',
-  // 'notes' => 'sometimes|string',
 
 
 
@@ -70,14 +62,14 @@ const InventoryUpload = (props) => {
         const wb = XLSX.read(binaryStr, { type: "binary" });
         const wsname = wb.SheetNames[0];
         const ws = wb.Sheets[wsname];
-        // Convert worksheet to JSON array with header row from Excel
+       
         const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
         if (data.length > 1) {
           const headers = data[0].map((h) => h.trim());
           const rows = data.slice(1);
           const formattedData = rows.map((row) => {
             let obj = {};
-            // Map each cell to corresponding header
+            
             headers.forEach((header, index) => {
               obj[header] = row[index];
             });
@@ -88,8 +80,8 @@ const InventoryUpload = (props) => {
               product_description: String(obj.Description || ""),
               discount_price: parseFloat(obj.DiscountAmount) || 0,
               discount_type: String(obj.DiscountType || ""),
-              all_imageUrls: [], // always empty array
-              feature_imageUrl: null, // always null
+              all_imageUrls: [], 
+              feature_imageUrl: null, 
               storage_gb: parseInt(obj.GB || ""),
               imei: String(obj.IMEI || ""),
               model_name: String(obj.Model || ""),
@@ -105,14 +97,14 @@ const InventoryUpload = (props) => {
             };
           });
           setExcelData(formattedData);
-          setShowFetchImagesButton(true); // Show the button after successful import
+          setShowFetchImagesButton(true); 
         }
       };
       reader.readAsBinaryString(excelFile);
     }
   };
 
-  // Use modal instead of window.confirm to delete a row
+ 
   const toggleConfirmDeleteModal = () => setConfirmDeleteModal(!confirmDeleteModal);
 
   const handleDeleteRowRequest = (rowIndex) => {
@@ -131,7 +123,7 @@ const InventoryUpload = (props) => {
     toggleConfirmDeleteModal();
   };
 
-  // New handler to send each product individually to the API
+  
   const handleSubmitProducts = async () => {
     if (excelData.length === 0) return;
     let successCount = 0;
@@ -141,21 +133,21 @@ const InventoryUpload = (props) => {
       try {
         const formData = new FormData();
         
-        // Append each product's data to the FormData object
+      
         for (const [key, value] of Object.entries(product)) {
           if (key === 'all_imageUrls') {
-            // Append each file in all_imageUrls to the FormData
+            
             value.forEach((file, index) => {
-              formData.append(`all_imageUrls[]`, file); // Use array notation for multiple files
+              formData.append(`all_imageUrls[]`, file); 
             });
           } else {
             formData.append(key, value);
           }
         }
 
-        const response = await fetch("http://localhost:8000/api/inventory", {
+        const response = await fetch(`${BASE_URL}/inventory`, {
           method: "POST",
-          body: formData // Send the FormData object
+          body: formData 
         });
 
         if (response.ok) {
@@ -174,7 +166,7 @@ const InventoryUpload = (props) => {
     } else {
       toast.error(`Products added: ${successCount}, Failures: ${failCount}`);
     }
-    // Optionally clear the Excel data if needed
+    
     setExcelData([]);
   };
 
@@ -199,7 +191,7 @@ const InventoryUpload = (props) => {
             })
           );
 
-          // Update the product with fetched images
+          
           setExcelData(prevData => 
             prevData.map((item, idx) => 
               idx === excelData.indexOf(product) ? { ...item, feature_imageUrl: imageFiles[0], all_imageUrls: imageFiles } : item
@@ -316,7 +308,7 @@ const InventoryUpload = (props) => {
                       <Button color="primary" onClick={handleSubmitProducts}>
                         Add These Products
                       </Button>
-                      {showFetchImagesButton && ( // Conditionally render the fetch images button
+                      {showFetchImagesButton && ( 
                         <Button color="info" onClick={handleFetchProductImages} className="ms-2">
                           Fetch Product Images
                         </Button>
@@ -338,7 +330,7 @@ const InventoryUpload = (props) => {
         </Col>
       </Row>
 
-      {/* Confirmation Modal for Row Deletion */}
+      
       <Modal isOpen={confirmDeleteModal} toggle={toggleConfirmDeleteModal}>
         <ModalHeader toggle={toggleConfirmDeleteModal}>Confirm Delete</ModalHeader>
         <ModalBody>

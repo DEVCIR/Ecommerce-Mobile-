@@ -3,6 +3,7 @@ import { Row, Col, Card, CardBody, Button, CardTitle, Table } from "reactstrap";
 import { connect } from "react-redux";
 import { setBreadcrumbItems } from "../../store/actions";
 import { Toaster, toast } from "sonner";
+import {BASE_URL} from '../../Service';
 
 const PurchaseOrderTable = (props) => {
     document.title = "Purchase Orders | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -17,7 +18,7 @@ const PurchaseOrderTable = (props) => {
 
     const fetchPurchaseOrderData = async () => {
         try {
-            const response = await fetch("http://localhost:8000/api/purchase-orders");
+            const response = await fetch(`${BASE_URL}/purchase-orders`);
             const result = await response.json();
             
             if (result.data && result.data.data && Array.isArray(result.data.data)) {

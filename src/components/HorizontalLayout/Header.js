@@ -14,14 +14,13 @@ import { Container } from "reactstrap"
 import LanguageDropdown from "../CommonForBoth/TopbarDropdown/LanguageDropdown"
 import NotificationDropdown from "../CommonForBoth/TopbarDropdown/NotificationDropdown"
 import ProfileMenu from "../CommonForBoth/TopbarDropdown/ProfileMenu"
-
-// import megamenuImg from "../../assets/images/megamenu-img.png"
 import logo from "../../assets/images/logo-sm.png"
 import logoLight from "../../assets/images/logo-light.png"
 import logoDark from "../../assets/images/logo-dark.png"
 
 //i18n
 import { withTranslation } from "react-i18next"
+import { color } from "echarts"
 
 const Header = props => {
   const [isSearch, setSearch] = useState(false)
@@ -152,6 +151,7 @@ const Header = props => {
               </div>
             </div>
             <NotificationDropdown />
+            
             <ProfileMenu />
             <div className="dropdown d-inline-block">
               <button

@@ -12,6 +12,7 @@ import {
   Button,
 } from "reactstrap";
 import { Toaster, toast } from "sonner";
+import {BASE_URL} from '../../Service';
 
 function AddDeliveryNote({ onBackClick }) {
   document.title = "Add Delivery Note | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -32,7 +33,7 @@ function AddDeliveryNote({ onBackClick }) {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/orders");
+        const response = await fetch(`${BASE_URL}/orders`);
         const data = await response.json();
         
         if (data && data.data && data.data.data) {
@@ -52,7 +53,7 @@ function AddDeliveryNote({ onBackClick }) {
   const fetchOrderItems = async (orderId) => {
     setItemsLoading(true);
     try {
-      const response = await fetch(`http://localhost:8000/api/order-items?order_id=${orderId}`);
+      const response = await fetch(`${BASE_URL}/order-items?order_id=${orderId}`);
       const data = await response.json();
       
       if (data && data.data && data.data.data) {
@@ -140,7 +141,7 @@ const handleSubmit = async (e) => {
   
     try {
       // First, create the delivery note
-      const response = await fetch("http://localhost:8000/api/delivery-notes", {
+      const response = await fetch(`${BASE_URL}/delivery-notes`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -156,16 +157,16 @@ const handleSubmit = async (e) => {
         return;
       }
   
-      // If delivery note was created successfully, get its ID
+      
       const deliveryNoteId = data.id || data.data.id;
       
-      // Create delivery note items one by one
+      
       const createdItems = [];
       const errors = [];
       
       for (const item of orderItems) {
         try {
-          const itemResponse = await fetch("http://localhost:8000/api/delivery-note-items", {
+          const itemResponse = await fetch(`${BASE_URL}/delivery-note-items`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -224,7 +225,7 @@ const handleSubmit = async (e) => {
             <CardBody>
               <CardTitle className="h4">Add Delivery Note</CardTitle>
               <Form onSubmit={handleSubmit}>
-                {/* Delivery Number */}
+              
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Delivery Number</Label>
                   <Col md={10}>
@@ -237,7 +238,7 @@ const handleSubmit = async (e) => {
                   </Col>
                 </Row>
 
-                {/* Order Selection */}
+              
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Order</Label>
                   <Col md={10}>
@@ -263,7 +264,7 @@ const handleSubmit = async (e) => {
                   </Col>
                 </Row>
 
-                {/* Customer */}
+              
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Customer</Label>
                   <Col md={10}>
@@ -277,7 +278,7 @@ const handleSubmit = async (e) => {
                   </Col>
                 </Row>
 
-                {/* Order Items */}
+                
                 {itemsLoading ? (
                   <Row className="mb-3">
                     <Col md={{ offset: 2, size: 10 }}>
@@ -333,7 +334,7 @@ const handleSubmit = async (e) => {
                   </Row>
                 )}
 
-                {/* Delivery Date */}
+                
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Delivery Date</Label>
                   <Col md={10}>
@@ -346,7 +347,7 @@ const handleSubmit = async (e) => {
                   </Col>
                 </Row>
 
-                {/* Shipping Method */}
+               
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Shipping Method</Label>
                   <Col md={10}>
@@ -361,7 +362,7 @@ const handleSubmit = async (e) => {
                   </Col>
                 </Row>
 
-                {/* Tracking Number */}
+                
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Tracking Number</Label>
                   <Col md={10}>
@@ -375,7 +376,7 @@ const handleSubmit = async (e) => {
                   </Col>
                 </Row>
 
-                {/* Notes */}
+               
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Notes</Label>
                   <Col md={10}>
@@ -390,7 +391,7 @@ const handleSubmit = async (e) => {
                   </Col>
                 </Row>
 
-                {/* Form Buttons */}
+               
                 <Row className="mb-3">
                   <Col className="text-end">
                     <Button color="secondary" onClick={onBackClick} className="me-2" type="button">

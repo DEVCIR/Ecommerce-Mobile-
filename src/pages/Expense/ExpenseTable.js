@@ -3,11 +3,10 @@ import React, { useEffect, useState } from "react"
 import { Row, Col, Card, CardBody, CardTitle, Button } from "reactstrap"
 import { Table, Thead, Tbody, Tr, Th, Td } from "react-super-responsive-table"
 import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css"
-
 import { connect } from "react-redux";
-
 import { setBreadcrumbItems } from "../../store/actions";
 import { toast } from "sonner";
+import {BASE_URL} from '../../Service';
 
 const ExpenseTable = (props) => {
     document.title = "Responsive Table | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -22,7 +21,7 @@ const ExpenseTable = (props) => {
 
     const fetchExpenses = async () => {
         try {
-            const response = await fetch('http://localhost:8000/api/expenses');
+            const response = await fetch(`${BASE_URL}/expenses`);
             const result = await response.json();
             setCustomers(result.data.data);
         } catch (error) {
@@ -44,7 +43,7 @@ const ExpenseTable = (props) => {
         if (!confirmDelete) return;
 
         try {
-            const response = await fetch(`http://localhost:8000/api/expenses/${customerId}`, {
+            const response = await fetch(`${BASE_URL}/expenses/${customerId}`, {
                 method: "DELETE",
                 headers: {
                     'Authorization': "Bearer YOUR_TOKEN_HERE",
@@ -112,7 +111,7 @@ const ExpenseTable = (props) => {
                                                     <Td>{expense.category.category_name}</Td>
                                                     <Td>{expense.is_active ? 'Yes' : 'No'}</Td>
                                                     <Td>
-                                                        <Button color="warning" onClick={() => onEdit(expense.id)}>Edit</Button>
+                                                        <Button color="primary" onClick={() => onEdit(expense.id)}>Edit</Button>
                                                         <Button color="danger" onClick={() => handleDelete(expense.id)} style={{ marginLeft: '5px' }}>Delete</Button>
                                                     </Td>
                                                 </Tr>

@@ -16,6 +16,9 @@ import { connect } from "react-redux";
 import { setBreadcrumbItems } from "../../store/actions";
 import Select from 'react-select';
 import { Toaster, toast } from "sonner";
+import {BASE_URL} from '../../Service';
+
+
 
 function AddBuyers({ props, onBackClick }) {
     document.title = "Add Product | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -99,7 +102,7 @@ function AddBuyers({ props, onBackClick }) {
 
         try {
             // Post userData
-            const userResponse = await fetch("http://localhost:8000/api/users", {
+            const userResponse = await fetch(`${BASE_URL}/users`, {
                 method: "POST",
                 headers: {
                     'Accept': 'application/json',
@@ -115,7 +118,7 @@ function AddBuyers({ props, onBackClick }) {
                 customerData.user_id = userResult.user.id; // Assuming the user ID is in userResult.user.id
 
                 // Post customerData after user creation
-                const customerResponse = await fetch("http://localhost:8000/api/customers", {
+                const customerResponse = await fetch(`${BASE_URL}/customers`, {
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json', // Set content type to JSON
@@ -237,28 +240,7 @@ function AddBuyers({ props, onBackClick }) {
                                     </Col>
                                 </Row>
 
-                                {/* Role */}
-                                {/* <Row className="mb-3">
-                                    <Label htmlFor="role" className="col-md-2 col-form-label">
-                                        Role
-                                    </Label>
-                                    <Col md={10}>
-                                        <Input
-                                            type="select"
-                                            name="role"
-                                            id="role"
-                                            value={formData.role}
-                                            onChange={handleChange}
-                                            required
-                                        >
-                                            <option value="admin">Admin</option>
-                                            <option value="manager">Manager</option>
-                                            <option value="staff">Staff</option>
-                                            <option value="wholesale">Wholesale</option>
-                                            <option value="customer">Customer</option>
-                                        </Input>
-                                    </Col>
-                                </Row> */}
+                           
 
                                 {/* Profile Picture */}
                                 <Row className="mb-3">

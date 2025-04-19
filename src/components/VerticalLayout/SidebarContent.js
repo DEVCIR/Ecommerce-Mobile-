@@ -209,12 +209,12 @@ const SidebarContent = props => {
                 <span>{props.t("Expense")}</span>
               </Link>
             </li>
-            <li>
+            {/* <li>
               <Link to="/order" className="waves-effect">
                 <i className="mdi mdi-view-dashboard"></i>
                 <span>{props.t("Order")}</span>
               </Link>
-            </li>
+            </li> */}
             <li>
               <Link to="/subscriber" className="waves-effect">
                 <i className="mdi mdi-view-dashboard"></i>
@@ -270,23 +270,85 @@ const SidebarContent = props => {
               </Link>
             </li>
             <li>
-              <Link to="/creditNote" className="waves-effect">
+              <Link to="/rmas" className="waves-effect">
                 <i className="mdi mdi-view-dashboard"></i>
-                <span>{props.t("Credit Note")}</span>
+                <span>{props.t("Rmas")}</span>
               </Link>
             </li>
             <li>
-              <Link to="/credit-note-item" className="waves-effect">
+              <Link to="/reporttemplate" className="waves-effect">
                 <i className="mdi mdi-view-dashboard"></i>
-                <span>{props.t("Credit Note Item")}</span>
+                <span>{props.t("Report Template")}</span>
               </Link>
             </li>
+            <li>
+              <Link to="/generatereport" className="waves-effect">
+                <i className="mdi mdi-view-dashboard"></i>
+                <span>{props.t("Generate Report")}</span>
+              </Link>
+            </li>
+            <li>
+              <Link to="/listing" className="waves-effect">
+                <i className="mdi mdi-view-dashboard"></i>
+                <span>{props.t("Listing")}</span>
+              </Link>
+            </li>
+
+            <li>
+              <Link to="/creditnotemodule" className="waves-effect">
+                <i className="mdi mdi-view-dashboard"></i>
+                <span>{props.t("Credit Note Module")}</span>
+              </Link>
+            </li>
+
+            <li>
+              <Link to="/creditnotetable" className="waves-effect">
+                <i className="mdi mdi-view-dashboard"></i>
+                <span>{props.t("Credit Note Table")}</span>
+              </Link>
+            </li>
+
+            <li>
+              <Link to="/rmastable" className="waves-effect">
+                <i className="mdi mdi-view-dashboard"></i>
+                <span>{props.t("Rmas Table")}</span>
+              </Link>
+            </li>
+
+            <li>
+              <Link to="/listingmodule" className="waves-effect">
+                <i className="mdi mdi-view-dashboard"></i>
+                <span>{props.t("Listing Module")}</span>
+              </Link>
+            </li>
+
+            <li>
+              <Link to="/listingoverview" className="waves-effect">
+                <i className="mdi mdi-view-dashboard"></i>
+                <span>{props.t("Listing Overview")}</span>
+              </Link>
+            </li>
+
+            <li>
+              <Link to="/invoicetemplate" className="waves-effect">
+                <i className="mdi mdi-view-dashboard"></i>
+                <span>{props.t("Invoice Template")}</span>
+              </Link>
+            </li>
+
             <li>
               <Link to="/credit-note-admin" className="waves-effect">
                 <i className="mdi mdi-view-dashboard"></i>
                 <span>{props.t("Credit Note Admin")}</span>
               </Link>
-            </li>
+              </li>
+
+            {/* <li>
+              <Link to="/creditNote" className="waves-effect">
+                <i className="mdi mdi-view-dashboard"></i>
+                <span>{props.t("Credit Note")}</span>
+              </Link>
+            </li> */}
             {/* 
             <li>
               <Link to="/calendar" className=" waves-effect">

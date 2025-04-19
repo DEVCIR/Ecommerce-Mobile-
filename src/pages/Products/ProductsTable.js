@@ -7,6 +7,7 @@ import { setBreadcrumbItems } from "../../store/actions";
 import AddProducts from "./AddProducts";
 import { useNavigate } from "react-router-dom";
 import { Toaster, toast } from "sonner";
+import {BASE_URL} from '../../Service';
 
 
 const ProductsTable = (props) => {
@@ -49,7 +50,7 @@ const ProductsTable = (props) => {
 
   const fetchProducts = async (filters = {}) => {
     try {
-      let url = "http://localhost:8000/api/inventory";
+      let url = `${BASE_URL}/inventory`;
       const params = new URLSearchParams();
 
       // Main filters
@@ -136,13 +137,7 @@ const ProductsTable = (props) => {
     if (!confirmDelete) return;
 
     try {
-      // const response = await fetch(`http://localhost:8000/api/products/${productId}`, {
-      //   method: "DELETE",
-      //   headers: {
-      //     Authorization: "Bearer 44|cz0HARoeeIbtXnowBxEZ3PfcBPOhXyxdeKwXGeQ148685478",
-      //   },
-      // });
-      const response = await fetch(`http://127.0.0.1:8000/api/inventory/${productId}`, {
+      const response = await fetch(`${BASE_URL}/inventory/${productId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -182,10 +177,7 @@ const ProductsTable = (props) => {
                   <Col>
                     <CardTitle className="h4">Products Table</CardTitle>
                   </Col>
-                  {/* <Col className="text-end">
-                    <Button color="secondary" style={{ marginRight:2 }} onClick={() => { navigate('/inventory-upload') }}>Upload Products File</Button>
-                    <Button color="success" onClick={handleAddProduct}>Add Product</Button>
-                  </Col> */}
+                  
                 </Row>
               ) : (
                 <Row className="align-items-center mb-3">

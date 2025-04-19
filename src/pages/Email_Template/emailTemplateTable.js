@@ -3,6 +3,7 @@ import { Row, Col, Card, CardBody, Button, CardTitle, Table } from "reactstrap";
 import { connect } from "react-redux";
 import { setBreadcrumbItems } from "../../store/actions";
 import { Toaster, toast } from "sonner";
+import {BASE_URL} from '../../Service';
 
 const EmailTemplateTable = (props) => {
     document.title = "Email Templates | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -17,7 +18,7 @@ const EmailTemplateTable = (props) => {
 
     const fetchEmailTemplateData = async () => {
         try {
-            const response = await fetch("http://localhost:8000/api/email-templates");
+            const response = await fetch(`${BASE_URL}/email-templates`);
             const result = await response.json();
             
             if (result.success && Array.isArray(result.data)) {
@@ -57,7 +58,7 @@ const EmailTemplateTable = (props) => {
 
     const handleDelete = async (id) => {
         try {
-            const response = await fetch(`http://localhost:8000/api/email-templates/${id}`, {
+            const response = await fetch(`${BASE_URL}/email-templates/${id}`, {
                 method: 'DELETE'
             });
             
@@ -65,7 +66,7 @@ const EmailTemplateTable = (props) => {
             
             if (result.success) {
                 toast.success('Email template deleted successfully');
-                // Refresh the data after deletion
+               
                 fetchEmailTemplateData();
             } else {
                 toast.error(result.message || 'Failed to delete email template');

@@ -12,6 +12,7 @@ import {
   Button,
 } from "reactstrap";
 import { Toaster, toast } from "sonner";
+import {BASE_URL} from '../../Service';
 
 function EditMarketplaceItem({ onBackClick, item }) {
   document.title = "Edit Marketplace Item | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -37,12 +38,11 @@ function EditMarketplaceItem({ onBackClick, item }) {
     setIsSubmitting(true);
     
     try {
-      const response = await fetch(`http://localhost:8000/api/marketplaces/${item.id}`, {
+      const response = await fetch(`${BASE_URL}/marketplaces/${item.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          // Include authorization header if needed
-          // 'Authorization': 'Bearer your-token-here'
+          
         },
         body: JSON.stringify(formData)
       });

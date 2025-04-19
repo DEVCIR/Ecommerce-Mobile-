@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react"
 import { Row, Col, Card, CardBody, CardTitle, Table, Button } from "reactstrap";
 import { connect } from "react-redux";
 import { setBreadcrumbItems } from "../../store/actions";
+import { toast } from 'react-toastify';
+import {BASE_URL} from '../../Service';
 
 const DeliveryNoteTable = (props) => {
     document.title = "Delivery Notes | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -22,7 +24,7 @@ const DeliveryNoteTable = (props) => {
     const fetchDeliveryNoteData = async (page = 1) => {
         try {
             setLoading(true);
-            const response = await fetch(`http://localhost:8000/api/delivery-notes?page=${page}`);
+            const response = await fetch(`${BASE_URL}/delivery-notes?page=${page}`);
             const result = await response.json();
             
             if (result.data && Array.isArray(result.data.data)) {
@@ -60,9 +62,24 @@ const DeliveryNoteTable = (props) => {
         return date.toLocaleDateString();
     };
 
-    const handlePageChange = (page) => {
-        if (page >= 1 && page <= Math.ceil(pagination.total / pagination.per_page)) {
-            fetchDeliveryNoteData(page);
+    const handleDelete = async (noteId) => {
+        if (window.confirm('Are you sure you want to delete this delivery note and all its items?')) {
+            try {
+                const response = await fetch(`${BASE_URL}/delivery-notes/${noteId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                 
+                    toast.success('Delivery note and its items deleted successfully');
+                    fetchDeliveryNoteData(pagination.current_page);
+                } else {
+                    throw new Error('Failed to delete delivery note');
+                }
+            } catch (error) {
+                console.error('Error deleting delivery note:', error);
+                alert('Error deleting delivery note: ' + error.message);
+            }
         }
     };
 
@@ -97,6 +114,7 @@ const DeliveryNoteTable = (props) => {
                                                 <th>Tracking Number</th>
                                                 <th>Status</th>
                                                 <th>Notes</th>
+                                                <th>Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -104,18 +122,36 @@ const DeliveryNoteTable = (props) => {
                                                 deliveryNoteData.map(note => (
                                                     <tr key={note.id}>
                                                         <td>{displayField(note.delivery_number)}</td>
-                                                        <td>{displayField(note.order.order_number)}</td>
-                                                        <td>{displayField(note.order.customer.user.name)}</td>
+                                                        <td>{displayField(note.order?.order_number)}</td>
+                                                        <td>{displayField(note.order?.customer?.user?.name)}</td>
                                                         <td>{formatDate(note.delivery_date)}</td>
                                                         <td>{displayField(note.shipping_method)}</td>
                                                         <td>{displayField(note.tracking_number)}</td>
                                                         <td>{displayField(note.status)}</td>
                                                         <td>{displayField(note.notes)}</td>
+                                                        <td>
+                                                            <div className="d-flex gap-2">
+                                                                <Button 
+                                                                    color="primary" 
+                                                                    size="sm"
+                                                                    onClick={() => props.onEditNoteClick(note)}
+                                                                >
+                                                                    <i className="bx bx-edit-alt"></i> Edit
+                                                                </Button>
+                                                                <Button 
+                                                                    color="danger" 
+                                                                    size="sm"
+                                                                    onClick={() => handleDelete(note.id)}
+                                                                >
+                                                                    <i className="bx bx-trash"></i> Delete
+                                                                </Button>
+                                                            </div>
+                                                        </td>
                                                     </tr>
                                                 ))
                                             ) : (
                                                 <tr>
-                                                    <td colSpan="8" className="text-center">No delivery note data available</td>
+                                                    <td colSpan="9" className="text-center">No delivery note data available</td>
                                                 </tr>
                                             )}
                                         </tbody>

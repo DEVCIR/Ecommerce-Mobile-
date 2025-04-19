@@ -3,6 +3,7 @@ import { Card, CardBody, Col, Row, CardTitle, Form, Label, Input, Button } from 
 import { connect } from "react-redux";
 import { setBreadcrumbItems } from "../../store/actions";
 import { useParams, useNavigate } from "react-router-dom";
+import {BASE_URL} from '../../Service';
 
 const UpdateOrderStatus = (props) => {
   document.title = "Update Order Status | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -29,7 +30,7 @@ const UpdateOrderStatus = (props) => {
 
   const fetchStatus = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/order-statuses/${id}`, {
+      const response = await fetch(`${BASE_URL}/order-statuses/${id}`, {
         headers: {
           "Authorization": "Bearer 44|cz0HARoeeIbtXnowBxEZ3PfcBPOhXyxdeKwXGeQ148685478",
         },
@@ -55,7 +56,7 @@ const UpdateOrderStatus = (props) => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`http://localhost:8000/api/order-statuses/${id}`, {
+      const response = await fetch(`${BASE_URL}/order-statuses/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

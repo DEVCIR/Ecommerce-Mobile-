@@ -3,12 +3,11 @@ import React, { useEffect, useState } from "react"
 import { Row, Col, Card, CardBody, Button, CardTitle, Modal, ModalHeader, ModalBody, ModalFooter, Input, Label, Dropdown, DropdownToggle, DropdownMenu } from "reactstrap";
 import { Table, Thead, Tbody, Tr, Th, Td } from "react-super-responsive-table"
 import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css"
-
 import { connect } from "react-redux";
-
 import { setBreadcrumbItems } from "../../store/actions";
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
+import {BASE_URL} from '../../Service';
 
 const InventoryTable = (props) => {
     const navigate = useNavigate()
@@ -62,7 +61,7 @@ const InventoryTable = (props) => {
         categoryFilter = ""
     ) => {
         try {
-            let url = "http://127.0.0.1:8000/api/inventory";
+            let url = `${BASE_URL}/inventory`;
             const params = new URLSearchParams();
 
             // Existing filters
@@ -158,7 +157,7 @@ const InventoryTable = (props) => {
     // Function to handle delete action
     const handleDelete = async (id) => {
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/inventory/${id}`, {
+            const response = await fetch(`${BASE_URL}/inventory/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': 'Bearer cz0HARoeeIbtXnowBxEZ3PfcBPOhXyxdeKwXGeQ148685478'
@@ -181,7 +180,7 @@ const InventoryTable = (props) => {
     const handleStatusChange = async (id, status) => {
         const active = status === "Add"; // Save true if status is "Add", else false
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/inventory/${id}`, {
+            const response = await fetch(`${BASE_URL}/inventory/${id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -318,8 +317,7 @@ const InventoryTable = (props) => {
                     <Card>
                         <CardBody>
                             <div style={{ 'display': 'flex', 'justifyContent': 'space-between', 'marginBottom': '10px' }}>
-                                {/* <CardTitle className="h4">Inventory Data</CardTitle>
-                                <Button color="success" onClick={props.onAddProductClick}>Add Inventory</Button> */}
+                                
                                 <Col>
                                     <CardTitle className="h4">Inventory Table</CardTitle>
                                 </Col>
@@ -365,18 +363,10 @@ const InventoryTable = (props) => {
                                                             placeholder="Enter brand"
                                                         />
                                                     </div>
-                                                    {/* <div className="col-md-4">
-        <Label>Supplier</Label>
-        <Input
-          type="text"
-          value={supplierFilter}
-          onChange={(e) => setSupplierFilter(e.target.value)}
-          placeholder="Enter supplier"
-        />
-      </div> */}
+
                                                 </div>
 
-                                                {/* Second Row - Serial, IMEI, Condition */}
+                                              
                                                 <div className="row" style={{ margin: 0 }}>
                                                     <div className="col-md-4">
                                                         <Label>Serial No</Label>
@@ -447,10 +437,10 @@ const InventoryTable = (props) => {
                                                     </div>
                                                 </div>
 
-                                                {/* More Filters Section (conditionally rendered) */}
+                                                
                                                 {showMoreFilters && (
                                                     <>
-                                                        {/* Fourth Row - Additional Filters */}
+                                                        
                                                         <div className="row" style={{ margin: 0 }}>
                                                             <div className="col-md-3">
                                                                 <Label>Discount Type</Label>

@@ -12,6 +12,7 @@ import {
   Button,
 } from "reactstrap";
 import { Toaster, toast } from "sonner";
+import {BASE_URL} from '../../Service';
 
 function AddEmailTemplate({ onBackClick, setViewToTable }) {
   document.title = "Add Email Template | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -48,7 +49,7 @@ function AddEmailTemplate({ onBackClick, setViewToTable }) {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("http://localhost:8000/api/email-templates", {
+      const response = await fetch(`${BASE_URL}/email-templates`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -88,7 +89,7 @@ function AddEmailTemplate({ onBackClick, setViewToTable }) {
             <CardBody>
               <CardTitle className="h4">Add Email Template</CardTitle>
               <Form>
-                {/* Template Name */}
+                
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Template Name</Label>
                   <Col md={10}>
@@ -103,7 +104,7 @@ function AddEmailTemplate({ onBackClick, setViewToTable }) {
                   </Col>
                 </Row>
 
-                {/* Subject */}
+                
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Subject</Label>
                   <Col md={10}>
@@ -118,7 +119,7 @@ function AddEmailTemplate({ onBackClick, setViewToTable }) {
                   </Col>
                 </Row>
 
-                {/* Content */}
+               
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Content</Label>
                   <Col md={10}>

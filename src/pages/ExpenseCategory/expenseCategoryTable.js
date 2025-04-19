@@ -3,6 +3,7 @@ import { Row, Col, Card, CardBody, Button, CardTitle, Table } from "reactstrap";
 import { connect } from "react-redux";
 import { setBreadcrumbItems } from "../../store/actions";
 import { Toaster, toast } from "sonner";
+import {BASE_URL} from '../../Service';
 
 const ExpenseCategoryTable = (props) => {
     document.title = "Expense Categories | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -17,7 +18,7 @@ const ExpenseCategoryTable = (props) => {
 
     const fetchCategoryData = async () => {
         try {
-            const response = await fetch(`http://localhost:8000/api/expense-categories`);
+            const response = await fetch(`${BASE_URL}/expense-categories`);
             const result = await response.json();
             
             if (result.data?.data && Array.isArray(result.data.data)) {
@@ -46,7 +47,7 @@ const ExpenseCategoryTable = (props) => {
 
     const handleDeleteCategory = async (id) => {
         try {
-            const response = await fetch(`http://localhost:8000/api/expense-categories/${id}`, {
+            const response = await fetch(`${BASE_URL}/expense-categories/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',

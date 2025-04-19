@@ -12,6 +12,7 @@ import {
   Button,
 } from "reactstrap";
 import { Toaster, toast } from "sonner";
+import {BASE_URL} from '../../Service';
 
 function EditEmailCampaign({ onBackClick, campaign = null }) {
   document.title = "Edit Email Campaign | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -51,7 +52,7 @@ function EditEmailCampaign({ onBackClick, campaign = null }) {
   useEffect(() => {
     const fetchTemplates = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/email-templates");
+        const response = await fetch(`${BASE_URL}/email-templates`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -71,7 +72,7 @@ function EditEmailCampaign({ onBackClick, campaign = null }) {
 
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/users");
+        const response = await fetch(`${BASE_URL}/users`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -128,7 +129,7 @@ function EditEmailCampaign({ onBackClick, campaign = null }) {
     setIsSubmitting(true);
     
     try {
-      const response = await fetch(`http://localhost:8000/api/email-campaigns/${campaign.id}`, {
+      const response = await fetch(`${BASE_URL}/email-campaigns/${campaign.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -170,7 +171,7 @@ function EditEmailCampaign({ onBackClick, campaign = null }) {
             <CardBody>
               <CardTitle className="h4">Edit Email Campaign</CardTitle>
               <Form>
-                {/* Template ID */}
+                
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Template</Label>
                   <Col md={10}>
@@ -193,7 +194,7 @@ function EditEmailCampaign({ onBackClick, campaign = null }) {
                   </Col>
                 </Row>
 
-                {/* Campaign Name */}
+              
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Campaign Name</Label>
                   <Col md={10}>
@@ -208,7 +209,7 @@ function EditEmailCampaign({ onBackClick, campaign = null }) {
                   </Col>
                 </Row>
 
-                {/* Subject */}
+              
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Subject</Label>
                   <Col md={10}>
@@ -223,7 +224,7 @@ function EditEmailCampaign({ onBackClick, campaign = null }) {
                   </Col>
                 </Row>
 
-                {/* Content */}
+                
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Content</Label>
                   <Col md={10}>
@@ -239,7 +240,7 @@ function EditEmailCampaign({ onBackClick, campaign = null }) {
                   </Col>
                 </Row>
 
-                {/* Scheduled Time */}
+             
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Scheduled Time</Label>
                   <Col md={10}>
@@ -252,7 +253,7 @@ function EditEmailCampaign({ onBackClick, campaign = null }) {
                   </Col>
                 </Row>
 
-                {/* User */}
+              
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">User</Label>
                   <Col md={10}>

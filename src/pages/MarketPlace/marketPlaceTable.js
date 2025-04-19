@@ -3,6 +3,7 @@ import { Row, Col, Card, CardBody, CardTitle, Table, Button, Badge } from "react
 import { connect } from "react-redux";
 import { setBreadcrumbItems } from "../../store/actions";
 import { Toaster, toast } from "sonner";
+import {BASE_URL} from '../../Service';
 
 const MarketplaceTable = (props) => {
     document.title = "Marketplaces | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -23,7 +24,7 @@ const MarketplaceTable = (props) => {
     const fetchMarketplaceData = async (page = 1) => {
         try {
             setLoading(true);
-            const response = await fetch(`http://localhost:8000/api/marketplaces?page=${page}`);
+            const response = await fetch(`${BASE_URL}/marketplaces?page=${page}`);
             const result = await response.json();
             
             if (result.data && Array.isArray(result.data.data)) {
@@ -65,7 +66,7 @@ const MarketplaceTable = (props) => {
 
     const handleDelete = async (id) => {
         try {
-            const response = await fetch(`http://localhost:8000/api/marketplaces/${id}`, {
+            const response = await fetch(`${BASE_URL}/marketplaces/${id}`, {
                 method: 'DELETE'
             });
             

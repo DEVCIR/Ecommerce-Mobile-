@@ -15,6 +15,7 @@ import { connect } from "react-redux";
 import { setBreadcrumbItems } from "../../store/actions";
 import Select from 'react-select';
 import { Toaster, toast } from "sonner";
+import {BASE_URL} from '../../Service';
 
 function EditExpense({ customerId, onBackClick }) {
     document.title = "Add Product | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -36,7 +37,7 @@ function EditExpense({ customerId, onBackClick }) {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch("http://localhost:8000/api/expense-categories");
+            const response = await fetch(`${BASE_URL}/expense-categories`);
             const result = await response.json();
             setCategories(result.data.data);
         } catch (error) {
@@ -46,7 +47,7 @@ function EditExpense({ customerId, onBackClick }) {
 
     const fetchUsers = async () => {
         try {
-            const response = await fetch("http://localhost:8000/api/users");
+            const response = await fetch(`${BASE_URL}/users`);
             const result = await response.json();
             setUsers(result.data);
         } catch (error) {
@@ -56,7 +57,7 @@ function EditExpense({ customerId, onBackClick }) {
 
     const fetchExpenseData = async () => {
         try {
-            const response = await fetch(`http://localhost:8000/api/expenses/${customerId}`);
+            const response = await fetch(`${BASE_URL}/expenses/${customerId}`);
             const result = await response.json();
             if (response.ok) {
                 const expense = result;
@@ -94,46 +95,36 @@ function EditExpense({ customerId, onBackClick }) {
         });
     };
 
-    const handleFileChange = (e) => {
-        const { name, files } = e.target;
-        if (name === "profile_picture") {
-            setFormData({
-                ...formData,
-                [name]: files[0], // Store the uploaded file
-            });
-        }
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Prepare expenseData
+        
         const expenseData = {
-            category_id: formData.category_id, // Include category_id
-            amount: formData.amount, // Include amount
-            expense_date: formData.expense_date, // Include expense_date
-            description: formData.description, // Include description
-            payment_method: formData.payment_method, // Include payment_method
-            reference_no: formData.reference_no, // Include reference_no
-            recorded_by: formData.recorded_by, // Include recorded_by
-            is_active: formData.is_active, // Include is_active
+            category_id: formData.category_id, 
+            amount: formData.amount, 
+            expense_date: formData.expense_date, 
+            description: formData.description, 
+            payment_method: formData.payment_method, 
+            reference_no: formData.reference_no, 
+            recorded_by: formData.recorded_by, 
+            is_active: formData.is_active, 
         };
 
         try {
-            // Update expense data
-            const response = await fetch(`http://localhost:8000/api/expenses/${formData.id}`, {
-                method: "PUT", // Use PUT method for update
+            
+            const response = await fetch(`${BASE_URL}/expenses/${formData.id}`, {
+                method: "PUT", 
                 headers: {
-                    'Content-Type': 'application/json', // Set content type to JSON
-                    'Authorization': "Bearer YOUR_TOKEN_HERE", // Update with your token
+                    'Content-Type': 'application/json', 
+                   
                 },
-                body: JSON.stringify(expenseData), // Convert expenseData to JSON
+                body: JSON.stringify(expenseData), 
             });
 
             const result = await response.json();
             if (response.ok) {
                 toast.success('Expense updated successfully');
-                onBackClick(); // Navigate back after successful update
+                onBackClick(); 
             } else {
                 console.error("Error updating expense:", result);
                 toast.error('Error updating expense. Please try again.');

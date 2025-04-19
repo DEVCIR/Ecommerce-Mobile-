@@ -15,14 +15,15 @@ import { connect } from "react-redux";
 import { setBreadcrumbItems } from "../../store/actions";
 import Select from 'react-select';
 import { Toaster, toast } from "sonner";
+import {BASE_URL} from '../../Service';
 
 function AddExpense({ props, onBackClick }) {
-    document.title = "Add Product | Lexa - Responsive Bootstrap 5 Admin Dashboard";
+    document.title = "Add Expense | Lexa - Responsive Bootstrap 5 Admin Dashboard";
 
     const breadcrumbItems = [
         { title: "Lexa", link: "#" },
-        { title: "Products", link: "#" },
-        { title: "Add Product", link: "#" },
+        { title: "Expense", link: "#" },
+        { title: "Add Expense", link: "#" },
     ];
 
     const [formData, setFormData] = useState({
@@ -41,7 +42,7 @@ function AddExpense({ props, onBackClick }) {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch("http://localhost:8000/api/expense-categories");
+            const response = await fetch(`${BASE_URL}/expense-categories`);
             const result = await response.json();
             setCategories(result.data.data);
         } catch (error) {
@@ -51,7 +52,7 @@ function AddExpense({ props, onBackClick }) {
 
     const fetchUsers = async () => {
         try {
-            const response = await fetch("http://localhost:8000/api/users");
+            const response = await fetch(`${BASE_URL}/users`);
             const result = await response.json();
             setUsers(result.data);
         } catch (error) {
@@ -99,7 +100,7 @@ function AddExpense({ props, onBackClick }) {
 
         try {
             // Post expenseData
-            const response = await fetch("http://localhost:8000/api/expenses", {
+            const response = await fetch(`${BASE_URL}/expenses`, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
@@ -130,7 +131,7 @@ function AddExpense({ props, onBackClick }) {
                     <Card>
                         <CardBody>
                             <div style={{ 'display': 'flex', 'justifyContent': 'space-between', 'marginBottom': '10px' }}>
-                                <CardTitle className="h4">Add Customer</CardTitle>
+                                <CardTitle className="h4">Add Expense</CardTitle>
                                 <Button color="success" style={{ marginLeft: 2, padding: '5px 15px' }} onClick={onBackClick}>Back</Button>
                             </div>
                             <Form onSubmit={handleSubmit}>
@@ -268,7 +269,7 @@ function AddExpense({ props, onBackClick }) {
                                 <Row className="mb-3">
                                     <Col className="text-end">
                                         <Button type="submit" color="primary">
-                                            Add User
+                                            Add Expense
                                         </Button>
                                     </Col>
                                 </Row>

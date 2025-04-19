@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import {BASE_URL} from '../../Service';
 
 import {
   Card,
@@ -66,11 +67,11 @@ function AddProducts({ props, setShowAddProduct }) {
   useEffect(() => {
     const fetchPlatforms = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/listing-platforms",
+        const response = await fetch(`${BASE_URL}/listing-platforms`,
           {
             method: "GET",
             headers: {
-              Authorization: "Bearer 44|cz0HARoeeIbtXnowBxEZ3PfcBPOhXyxdeKwXGeQ148685478",
+              // Authorization: "Bearer 44|cz0HARoeeIbtXnowBxEZ3PfcBPOhXyxdeKwXGeQ148685478",
             },
           }
         );
@@ -140,7 +141,7 @@ function AddProducts({ props, setShowAddProduct }) {
     }
 
     try {
-      const response = await fetch("http://localhost:8000/api/products", {
+      const response = await fetch(`${BASE_URL}/products`, {
         method: "POST",
         headers: {
           'Authorization': "Bearer 44|cz0HARoeeIbtXnowBxEZ3PfcBPOhXyxdeKwXGeQ148685478",
@@ -154,7 +155,7 @@ function AddProducts({ props, setShowAddProduct }) {
         const productId = result.ProductID;
 
         try {
-          const response = await fetch('http://127.0.0.1:8000/api/inventory', {
+          const response = await fetch(`${BASE_URL}/inventory`, {
             method: 'POST',
             headers: {
                'Authorization': "Bearer 44|cz0HARoeeIbtXnowBxEZ3PfcBPOhXyxdeKwXGeQ148685478",
@@ -188,7 +189,7 @@ function AddProducts({ props, setShowAddProduct }) {
 
         // Make a POST request for each selected platform
         for (const platform of selectedPlatforms) {
-          await fetch("http://127.0.0.1:8000/api/product-and-platforms", {
+          await fetch(`${BASE_URL}/product-and-platforms`, {
             method: "POST",
             headers: {
               'Content-Type': 'application/json',

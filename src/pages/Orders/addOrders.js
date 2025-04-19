@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 import { Toaster, toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import Select from 'react-select';
+import {BASE_URL} from '../../Service';
 
 const AddOrder = (props) => {
   document.title = "Order Now | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -44,7 +45,7 @@ const AddOrder = (props) => {
     const fetchCustomers = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch("http://localhost:8000/api/customers");
+            const response = await fetch(`${BASE_URL}/customers`);
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -69,7 +70,7 @@ const AddOrder = (props) => {
 
     const fetchInventory = async () => {
         try {
-            const response = await fetch("http://localhost:8000/api/inventory");
+            const response = await fetch(`${BASE_URL}/inventory`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -196,7 +197,7 @@ const AddOrder = (props) => {
         is_active: 1
       };
   
-      const orderResponse = await fetch("http://localhost:8000/api/orders", {
+      const orderResponse = await fetch(`${BASE_URL}/orders`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -218,12 +219,12 @@ const AddOrder = (props) => {
           quantity: productQuantities[product.value] || 1,
           unit_price: product.price,
           discount_amount: (product.discount) * (productQuantities[product.value] || 1),
-          total_price: (product.price - ( ( product.discount)  * (productQuantities[product.value] || 1))),
+          total_price: (product.price * (productQuantities[product.value] || 1) - ( ( product.discount)  * (productQuantities[product.value] || 1))),
         };
 
         console.log("mm", orderItemData);
   
-        const orderItemResponse = await fetch("http://localhost:8000/api/order-items", {
+        const orderItemResponse = await fetch(`${BASE_URL}/order-items`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -269,7 +270,7 @@ const generateInvoiceNumber = () => {
   
   console.log("My Invoice ",invoiceData)
 
-const invoiceResponse = await fetch("http://localhost:8000/api/invoices", {
+const invoiceResponse = await fetch(`${BASE_URL}/invoices`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

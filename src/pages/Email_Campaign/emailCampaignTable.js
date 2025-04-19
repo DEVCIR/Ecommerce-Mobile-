@@ -3,6 +3,7 @@ import { Row, Col, Card, CardBody, Button, CardTitle, Table, Badge } from "react
 import { connect } from "react-redux";
 import { setBreadcrumbItems } from "../../store/actions";
 import { Toaster, toast } from "sonner";
+import {BASE_URL} from '../../Service';
 
 const EmailCampaignTable = (props) => {
     document.title = "Email Campaigns | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -22,7 +23,7 @@ const EmailCampaignTable = (props) => {
 
     const fetchCampaignData = async () => {
         try {
-            const response = await fetch(`http://localhost:8000/api/email-campaigns?page=${pagination.current_page}`);
+            const response = await fetch(`${BASE_URL}/email-campaigns?page=${pagination.current_page}`);
             const result = await response.json();
             
             if (result.data && Array.isArray(result.data.data)) {
@@ -86,7 +87,7 @@ const EmailCampaignTable = (props) => {
 
     const handleDeleteCampaign = async (id) => {
         try {
-            const response = await fetch(`http://localhost:8000/api/email-campaigns/${id}`, {
+            const response = await fetch(`${BASE_URL}/email-campaigns/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -95,7 +96,7 @@ const EmailCampaignTable = (props) => {
 
             if (response.ok) {
                 toast.success('Email campaign deleted successfully');
-                // Refresh the data after deletion
+                
                 fetchCampaignData();
             } else {
                 const errorData = await response.json();

@@ -12,6 +12,7 @@ import {
   Button,
 } from "reactstrap";
 import { Toaster, toast } from "sonner";
+import {BASE_URL} from '../../Service';
 
 function AddSubscriber({ onBackClick, setViewToTable }) {
   document.title = "Add Subscriber | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -61,7 +62,7 @@ function AddSubscriber({ onBackClick, setViewToTable }) {
         subscription_date: formatDateForAPI(formData.subscription_date),
       };
 
-      const response = await fetch("http://localhost:8000/api/subscribers", {
+      const response = await fetch(`${BASE_URL}/subscribers`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

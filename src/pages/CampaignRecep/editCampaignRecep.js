@@ -116,7 +116,7 @@ function EditCampaignRecep({ onBackClick, recep }) {
             <CardBody>
               <CardTitle className="h4">Edit Campaign Recipient</CardTitle>
               <Form onSubmit={handleSubmit}>
-                {/* Campaign ID */}
+                
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Campaign</Label>
                   <Col md={10}>
@@ -141,7 +141,7 @@ function EditCampaignRecep({ onBackClick, recep }) {
                   </Col>
                 </Row>
 
-                {/* Subscriber ID */}
+                
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Subscriber</Label>
                   <Col md={10}>

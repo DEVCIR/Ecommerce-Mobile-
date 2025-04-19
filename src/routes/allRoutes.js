@@ -77,6 +77,7 @@ import UiVideo from "../pages/Ui/UiVideo"
 import UiSessionTimeout from "../pages/Ui/UiSessionTimeout"
 import UiRangeSlider from "../pages/Ui/UiRangeSlider"
 
+
 //Extra Pages
 import PagesTimeline from "../pages/Extra Pages/pages-timeline";
 import PagesInvoice from "../pages/Extra Pages/pages-invoice";
@@ -116,8 +117,24 @@ import CreditNote from "pages/CreditNote/CreditNote"
 import DeliveryNote from "pages/Delivery_Notes/deliveryNote"
 import CampaignRecep from "pages/CampaignRecep/campaignRecep"
 import Marketplace from "pages/MarketPlace/marketPlace"
-import CreditNoteItem from "pages/CreditNoteItem/CreditNoteItem"
+import Rmas from "pages/Rmas/rmas"
+import ReportTemplate from "pages/Report_Template/reportTemplate"
+import GenerateReport from "pages/Generate_Report/generateReport"
+import Listing from "pages/Listing/listing"
+
+import CreditNoteModule from "pages/CreditNote_Module/creditNoteModule"
+import GenerateCreditNote from "pages/CreditNote_Module/generateCreditNote"
+import RmasTable from "pages/CreditNote_Module/rmasTable";
+import ListingModule from "pages/Listing_Module/listing";
+import ListingOverview from "pages/Listing_Overview/listingOverview";
+import BellIcon from "pages/Bell_Icon/bellIcon";
+import InvoiceTemplate from "pages/InvoiceTemplate/invoiceTemplate";
 import CreditNoteAdmin from "pages/CreditNoteAdmin/CreditNoteAdmin"
+
+
+
+
+
 
 const userRoutes = [
   { path: "/dashboard", component: <Dashboard /> },
@@ -155,9 +172,19 @@ const userRoutes = [
   { path: "/deliverynote", component: <DeliveryNote /> },
   { path: "/campaignrecep", component: <CampaignRecep /> },
   { path: "/marketplace", component: <Marketplace /> },
-
-  { path: "/credit-note-item", component: <CreditNoteItem /> },
-  { path: "/credit-note-admin", component: <CreditNoteAdmin /> },
+  { path: "/rmas", component: <Rmas /> },
+  { path: "/reporttemplate", component: <ReportTemplate /> },
+  { path: "/generatereport", component: <GenerateReport /> },
+  { path: "/listing", component: <Listing /> },
+  { path: "/creditnotemodule", component: <CreditNoteModule /> },
+  { path: "/generatecreditnote", component: <GenerateCreditNote /> },
+  { path: "/rmastable", component: <RmasTable /> },
+  { path: "/listingmodule", component: <ListingModule /> },
+  { path: "/listingoverview", component: <ListingOverview /> },
+  { path: "/bellicon", component: <BellIcon /> },
+  { path: "/creditnotetable", component: <CreditNote /> },
+  { path: "/invoicetemplate", component: <InvoiceTemplate /> },
+  { path: "/credit-note-admin", component: <CreditNoteAdmin /> },
 
   // //calendar
   { path: "/calendar", component: <Calendar /> },

@@ -17,6 +17,7 @@ import { setBreadcrumbItems } from "../../store/actions";
 import Select from 'react-select';
 import { Toaster, toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import {BASE_URL} from '../../Service';
 
 function AddInventory({ props, onInventoryAdded }) {
   const navigate = useNavigate()
@@ -27,14 +28,6 @@ function AddInventory({ props, onInventoryAdded }) {
     { title: "Products", link: "#" },
     { title: "Add Product", link: "#" },
   ];
-
-//  // Brand validation
-//  'brand_description' => 'nullable|string',
-
-//  // Inventory validation
-//  'date_purchased' => 'nullable|date',
-//  'date_sold' => 'nullable|date',
-//  'notes' => 'nullable|string',
 
   const [formData, setFormData] = useState({
     brand_name: "",
@@ -90,7 +83,7 @@ function AddInventory({ props, onInventoryAdded }) {
 
     const fetchSuppliers = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/suppliers");
+        const response = await fetch(`${BASE_URL}/suppliers`);
         const data = await response.json();
         const options = data.data.data.map(supplier => ({
           value: supplier.id,
@@ -119,12 +112,12 @@ function AddInventory({ props, onInventoryAdded }) {
     if (name === "feature_imageUrl") {
       setFormData({
         ...formData,
-        [name]: files[0], // Store the single file for feature image
+        [name]: files[0], 
       });
     } else if (name === "all_imageUrls") {
       setFormData({
         ...formData,
-        [name]: Array.from(files), // Store multiple files for all images
+        [name]: Array.from(files), 
       });
     }
   };
@@ -133,7 +126,7 @@ function AddInventory({ props, onInventoryAdded }) {
     setSelectedPlatforms(selectedOptions);
   };
 
-  // Generate barcode dynamically
+  
   const generateBarcode = () => {
     return Math.floor(100000 + Math.random() * 900000).toString(); 
   };
@@ -161,7 +154,7 @@ function AddInventory({ props, onInventoryAdded }) {
     console.log("BArcode: ", generatedBarcode)
 
     try {
-      const response = await fetch("http://localhost:8000/api/inventory", {
+      const response = await fetch(`${BASE_URL}/inventory`, {
         method: "POST",
         body: formDataToSend,
       });
@@ -181,7 +174,7 @@ function AddInventory({ props, onInventoryAdded }) {
     } catch (error) {
       console.error("Error adding inventory:", error);
       toast.error('Error adding inventory. Please try again.')
-      // alert("Error adding product. Please try again.");
+      
     }
   };
 
@@ -308,13 +301,13 @@ function AddInventory({ props, onInventoryAdded }) {
                       onChange={handleChange}
                       required
                     >
-                      <option value="Brand New">Brand New</option>
-                      <option value="14 Days">14 Days</option>
-                      <option value="Grade A">Grade A</option>
-                      <option value="Grade B">Grade B</option>
-                      <option value="Grade C">Grade C</option>
-                      <option value="Grade D">Grade D</option>
-                      <option value="Grade E">Grade E</option>
+                      <option value="Brand New">Brand New (Sealed device)</option>
+                      <option value="14 Days">14 Days (Open-box device with all accessories)</option>
+                      <option value="Grade A">Grade A (Excellent condition, no cosmetic signs)</option>
+                      <option value="Grade B">Grade B (Minor wear and tear, fully functional)</option>
+                      <option value="Grade C">Grade C (Heavy wear and tear, fully functional)</option>
+                      <option value="Grade D">Grade D (1-2 issues, stock list items, no iCloud issues)</option>
+                      <option value="Grade E">Grade E (Doesn't power up, 3-5 problems, requires assignment)</option>
                     </Input>
                   </Col>
                 </Row>
@@ -559,41 +552,7 @@ function AddInventory({ props, onInventoryAdded }) {
                   </Col>
                 </Row>
 
-                {/* Purchase Order No */}
-                {/* <Row className="mb-3">
-                  <Label htmlFor="purchase_order_no" className="col-md-2 col-form-label">
-                    Purchase Order No
-                  </Label>
-                  <Col md={10}>
-                    <Input
-                      type="text"
-                      name="purchase_order_no"
-                      id="purchase_order_no"
-                      value={formData.purchase_order_no}
-                      onChange={handleChange}
-                      required
-                    />
-                  </Col>
-                </Row> */}
-
-                {/* barcode */}
-                {/* <Row className="mb-3">
-                  <Label htmlFor="barcode" className="col-md-2 col-form-label">
-                    Barcode
-                  </Label>
-                  <Col md={10}>
-                    <Input
-                      type="text"
-                      name="barcode"
-                      id="barcode"
-                      value={formData.barcode}
-                      onChange={handleChange}
-                      required
-                    />
-                  </Col>
-                </Row> */}
-
-                {/* location */}
+                
                 <Row className="mb-3">
                   <Label htmlFor="location" className="col-md-2 col-form-label">
                     Location

@@ -15,7 +15,7 @@ import { connect } from "react-redux";
 import { setBreadcrumbItems } from "../../store/actions";
 import { useParams, useNavigate } from "react-router-dom";
 import { Toaster, toast } from "sonner";
-import { type } from "@testing-library/user-event";
+import {BASE_URL} from '../../Service';
 
 const UpdateProduct = (props) => {
   document.title = "Update Product | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -58,7 +58,7 @@ const UpdateProduct = (props) => {
 
   const fetchProduct = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/inventory?id=${id}`, {
+      const response = await fetch(`${BASE_URL}/inventory?id=${id}`, {
         headers: {
           "content-type":"application/json",
           // "Authorization": "Bearer 44|cz0HARoeeIbtXnowBxEZ3PfcBPOhXyxdeKwXGeQ148685478"
@@ -122,11 +122,11 @@ const UpdateProduct = (props) => {
     // console.log("Updated ", formData)
     let filteredFormData = { ...formData };
     if (typeof filteredFormData.feature_imageUrl === 'string' && 
-        filteredFormData.feature_imageUrl.startsWith("http://127.0.0.1:8000/storage/images/products/")) {
+        filteredFormData.feature_imageUrl.startsWith(`${BASE_URL}/storage/images/products/`)) {
         delete filteredFormData.feature_imageUrl;
     }
     if (Array.isArray(filteredFormData.all_imageUrls) && 
-        filteredFormData.all_imageUrls.some(url => typeof url === 'string' && url.startsWith("http://127.0.0.1:8000/storage/images/products/"))) {
+        filteredFormData.all_imageUrls.some(url => typeof url === 'string' && url.startsWith(`${BASE_URL}/storage/images/products/`))) {
         delete filteredFormData.all_imageUrls;
     }
     console.log("ASDQe", filteredFormData)
@@ -154,7 +154,7 @@ const UpdateProduct = (props) => {
     }
 
     try {
-      const response = await fetch(`http://localhost:8000/api/inventory/${id}`, {
+      const response = await fetch(`${BASE_URL}/api/inventory/${id}`, {
         method: "POST",
         headers: hasImages ? { Authorization: headers.Authorization } : headers,
         body: requestBody,

@@ -3,6 +3,7 @@ import { Row, Col, Card, CardBody, Button, CardTitle, Table } from "reactstrap";
 import { connect } from "react-redux";
 import { setBreadcrumbItems } from "../../store/actions";
 import { Toaster, toast } from "sonner";
+import {BASE_URL} from '../../Service';
 
 const SupplierTable = (props) => {
     document.title = "Supplier | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -17,7 +18,7 @@ const SupplierTable = (props) => {
 
     const fetchSupplierData = async () => {
         try {
-          const response = await fetch("http://localhost:8000/api/suppliers");
+          const response = await fetch(`${BASE_URL}/suppliers`);
           const result = await response.json();
           
           if (result.data && result.data.data && Array.isArray(result.data.data)) {

@@ -12,6 +12,7 @@ import {
   Button,
 } from "reactstrap";
 import { Toaster, toast } from "sonner";
+import {BASE_URL} from '../../Service';
 
 function AddExpenseCategory({ onBackClick, setViewToTable }) {
   document.title = "Add Expense Category | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -37,7 +38,7 @@ function AddExpenseCategory({ onBackClick, setViewToTable }) {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("http://localhost:8000/api/expense-categories", {
+      const response = await fetch(`${BASE_URL}/expense-categories`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -77,7 +78,7 @@ function AddExpenseCategory({ onBackClick, setViewToTable }) {
             <CardBody>
               <CardTitle className="h4">Add Expense Category</CardTitle>
               <Form>
-                {/* Category Name */}
+               
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Category Name</Label>
                   <Col md={10}>
@@ -92,7 +93,7 @@ function AddExpenseCategory({ onBackClick, setViewToTable }) {
                   </Col>
                 </Row>
 
-                {/* Description */}
+                
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Description</Label>
                   <Col md={10}>

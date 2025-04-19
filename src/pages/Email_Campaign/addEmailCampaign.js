@@ -12,6 +12,7 @@ import {
   Button,
 } from "reactstrap";
 import { Toaster, toast } from "sonner";
+import {BASE_URL} from '../../Service';
 
 function AddEmailCampaign({ onBackClick, setViewToTable }) {
   document.title = "Add Email Campaign | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -39,7 +40,7 @@ function AddEmailCampaign({ onBackClick, setViewToTable }) {
   useEffect(() => {
     const fetchTemplates = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/email-templates");
+        const response = await fetch(`${BASE_URL}/email-templates`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -59,13 +60,13 @@ function AddEmailCampaign({ onBackClick, setViewToTable }) {
 
     const fetchUsers = async () => {
         try {
-          const response = await fetch("http://localhost:8000/api/users");
+          const response = await fetch(`${BASE_URL}/users`);
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
           const data = await response.json();
           
-          // Corrected data access based on your API response
+          
           if (data && Array.isArray(data.data)) {
             const formattedUsers = data.data.map(user => ({
               id: user.id,
@@ -143,7 +144,7 @@ function AddEmailCampaign({ onBackClick, setViewToTable }) {
     setIsSubmitting(true);
   
     try {
-      const response = await fetch("http://localhost:8000/api/email-campaigns", {
+      const response = await fetch(`${BASE_URL}/email-campaigns`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -190,7 +191,7 @@ function AddEmailCampaign({ onBackClick, setViewToTable }) {
             <CardBody>
               <CardTitle className="h4">Add Email Campaign</CardTitle>
               <Form>
-                {/* Template ID */}
+                
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Template</Label>
                   <Col md={10}>
@@ -213,7 +214,7 @@ function AddEmailCampaign({ onBackClick, setViewToTable }) {
                   </Col>
                 </Row>
 
-                {/* Campaign Name */}
+               
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Campaign Name</Label>
                   <Col md={10}>
@@ -228,7 +229,7 @@ function AddEmailCampaign({ onBackClick, setViewToTable }) {
                   </Col>
                 </Row>
 
-                {/* Subject */}
+              
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Subject</Label>
                   <Col md={10}>
@@ -243,7 +244,7 @@ function AddEmailCampaign({ onBackClick, setViewToTable }) {
                   </Col>
                 </Row>
 
-                {/* Content */}
+               
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Content</Label>
                   <Col md={10}>
@@ -259,7 +260,7 @@ function AddEmailCampaign({ onBackClick, setViewToTable }) {
                   </Col>
                 </Row>
 
-                {/* Scheduled Time */}
+               
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Scheduled Time</Label>
                   <Col md={10}>

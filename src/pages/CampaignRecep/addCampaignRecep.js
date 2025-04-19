@@ -158,7 +158,7 @@ function AddCampaignRecep({ onBackClick, setViewToTable }) {
             <CardBody>
               <CardTitle className="h4">Add Campaign Recipient</CardTitle>
               <Form>
-                {/* Campaign ID */}
+                
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Campaign</Label>
                   <Col md={10}>
@@ -184,7 +184,7 @@ function AddCampaignRecep({ onBackClick, setViewToTable }) {
                   </Col>
                 </Row>
 
-                {/* Subscriber ID */}
+              
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Subscriber</Label>
                   <Col md={10}>
@@ -210,7 +210,7 @@ function AddCampaignRecep({ onBackClick, setViewToTable }) {
                   </Col>
                 </Row>
 
-                {/* Email Address */}
+                
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Email Address</Label>
                   <Col md={10}>

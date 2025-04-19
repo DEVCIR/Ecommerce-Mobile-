@@ -3,11 +3,11 @@ import React, { useEffect, useState } from "react"
 import { Row, Col, Card, CardBody, CardTitle, Button } from "reactstrap"
 import { Table, Thead, Tbody, Tr, Th, Td } from "react-super-responsive-table"
 import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css"
-
 import { connect } from "react-redux";
-
 import { setBreadcrumbItems } from "../../store/actions";
 import { toast } from "sonner";
+import {BASE_URL} from '../../Service';
+
 
 const BuyersTable = (props) => {
     document.title = "Responsive Table | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -22,7 +22,7 @@ const BuyersTable = (props) => {
 
     const fetchCustomers = async () => {
         try {
-            const response = await fetch('http://localhost:8000/api/customers');
+            const response = await fetch(`${BASE_URL}/customers`);
             const result = await response.json();
             setCustomers(result.data.data); 
         } catch (error) {
@@ -45,7 +45,7 @@ const BuyersTable = (props) => {
         if (!confirmDelete) return;
 
         try {
-            const response = await fetch(`http://localhost:8000/api/users/${customerId}`, {
+            const response = await fetch(`${BASE_URL}/users/${customerId}`, {
                 method: "DELETE",
                 headers: {
                     'Authorization': "Bearer YOUR_TOKEN_HERE",

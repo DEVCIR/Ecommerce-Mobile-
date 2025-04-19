@@ -11,6 +11,7 @@ import {
   Button,
 } from "reactstrap";
 import { Toaster, toast } from "sonner";
+import {BASE_URL} from '../../Service';
 
 function EditSubscriber({ subscriberId, onBackClick }) {
   document.title = "Edit Subscriber | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -31,7 +32,7 @@ function EditSubscriber({ subscriberId, onBackClick }) {
   useEffect(() => {
     const fetchSubscriber = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/api/subscribers/${subscriberId}`);
+        const response = await fetch(`${BASE_URL}/subscribers/${subscriberId}`);
         const result = await response.json();
         console.log('API Response:', result);
         
@@ -60,7 +61,7 @@ function EditSubscriber({ subscriberId, onBackClick }) {
     e.preventDefault();
     
     try {
-      const response = await fetch(`http://localhost:8000/api/subscribers/${subscriberId}`, {
+      const response = await fetch(`${BASE_URL}/subscribers/${subscriberId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

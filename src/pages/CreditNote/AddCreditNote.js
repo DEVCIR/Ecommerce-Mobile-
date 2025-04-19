@@ -15,6 +15,7 @@ import { connect } from "react-redux";
 import { setBreadcrumbItems } from "../../store/actions";
 import Select from 'react-select';
 import { Toaster, toast } from "sonner";
+import {BASE_URL} from '../../Service';
 
 function AddCreditNote({ props, onBackClick }) {
     document.title = "Add Product | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -44,7 +45,7 @@ function AddCreditNote({ props, onBackClick }) {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch("http://localhost:8000/api/expense-categories");
+            const response = await fetch(`${BASE_URL}/expense-categories`);
             const result = await response.json();
             setCategories(result.data.data);
         } catch (error) {
@@ -54,7 +55,7 @@ function AddCreditNote({ props, onBackClick }) {
 
     const fetchUsers = async () => {
         try {
-            const response = await fetch("http://localhost:8000/api/users");
+            const response = await fetch(`${BASE_URL}/users`);
             const result = await response.json();
             setUsers(result.data);
         } catch (error) {
@@ -64,7 +65,7 @@ function AddCreditNote({ props, onBackClick }) {
 
     const fetchRMAs = async () => {
         try {
-            const response = await fetch("http://localhost:8000/api/rmas");
+            const response = await fetch(`${BASE_URL}/rmas`);
             const result = await response.json();
             setRmas(result.data.data);
         } catch (error) {
@@ -74,7 +75,7 @@ function AddCreditNote({ props, onBackClick }) {
 
     const fetchCustomers = async () => {
         try {
-            const response = await fetch("http://localhost:8000/api/customers");
+            const response = await fetch(`${BASE_URL}/customers`);
             const result = await response.json();
             setCustomers(result.data.data);
         } catch (error) {
@@ -125,7 +126,7 @@ function AddCreditNote({ props, onBackClick }) {
 
         try {
             // Post creditNoteData
-            const response = await fetch("http://localhost:8000/api/credit-notes", {
+            const response = await fetch(`${BASE_URL}/credit-notes`, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
@@ -160,7 +161,7 @@ function AddCreditNote({ props, onBackClick }) {
                                 <Button color="success" style={{ marginLeft: 2, padding: '5px 15px' }} onClick={onBackClick}>Back</Button>
                             </div>
                             <Form onSubmit={handleSubmit}>
-                                {/* Credit Note Number */}
+                               
                                 <Row className="mb-3">
                                     <Label htmlFor="credit_note_number" className="col-md-2 col-form-label">
                                         Credit Note Number
@@ -177,7 +178,7 @@ function AddCreditNote({ props, onBackClick }) {
                                     </Col>
                                 </Row>
 
-                                {/* RMA ID */}
+                               
                                 <Row className="mb-3">
                                     <Label htmlFor="rma_id" className="col-md-2 col-form-label">
                                         RMA ID
@@ -200,7 +201,7 @@ function AddCreditNote({ props, onBackClick }) {
                                     </Col>
                                 </Row>
 
-                                {/* Customer ID */}
+                                
                                 <Row className="mb-3">
                                     <Label htmlFor="customer_id" className="col-md-2 col-form-label">
                                         Customer
@@ -224,7 +225,7 @@ function AddCreditNote({ props, onBackClick }) {
                                     </Col>
                                 </Row>
 
-                                {/* Issue Date */}
+                                
                                 <Row className="mb-3">
                                     <Label htmlFor="issue_date" className="col-md-2 col-form-label">
                                         Issue Date
@@ -241,7 +242,7 @@ function AddCreditNote({ props, onBackClick }) {
                                     </Col>
                                 </Row>
 
-                                {/* Total Amount */}
+                                
                                 <Row className="mb-3">
                                     <Label htmlFor="total_amount" className="col-md-2 col-form-label">
                                         Total Amount
@@ -258,7 +259,7 @@ function AddCreditNote({ props, onBackClick }) {
                                     </Col>
                                 </Row>
 
-                                {/* Status */}
+                                
                                 <Row className="mb-3">
                                     <Label htmlFor="status" className="col-md-2 col-form-label">
                                         Status
@@ -281,7 +282,7 @@ function AddCreditNote({ props, onBackClick }) {
                                     </Col>
                                 </Row>
 
-                                {/* Notes */}
+                               
                                 <Row className="mb-3">
                                     <Label htmlFor="notes" className="col-md-2 col-form-label">
                                         Notes
@@ -297,7 +298,7 @@ function AddCreditNote({ props, onBackClick }) {
                                     </Col>
                                 </Row>
 
-                                {/* Created By */}
+                                
                                 <Row className="mb-3">
                                     <Label htmlFor="created_by" className="col-md-2 col-form-label">
                                         Created By
@@ -321,7 +322,7 @@ function AddCreditNote({ props, onBackClick }) {
                                     </Col>
                                 </Row>
 
-                                {/* Submit Button */}
+                               
                                 <Row className="mb-3">
                                     <Col className="text-end">
                                         <Button type="submit" color="primary">

@@ -1,187 +1,3 @@
-// import React, { useEffect, useState } from "react";
-// import { Row, Col, Card, CardBody, CardTitle, Button } from "reactstrap";
-// import { Table, Thead, Tbody, Tr, Th, Td } from "react-super-responsive-table";
-// import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
-// import { connect } from "react-redux";
-// import { setBreadcrumbItems } from "../../store/actions";
-// import { useNavigate } from "react-router-dom";
-// import { Toaster, toast } from "sonner";
-// import * as XLSX from "xlsx";
-
-
-// const UserStock = (props) => {
-//     document.title = "Products Table | Lexa - Responsive Bootstrap 5 Admin Dashboard";
-//     const navigate = useNavigate()
-
-//     const [products, setProducts] = useState([]);
-//     const [showAddProduct, setShowAddProduct] = useState(false);
-
-//     const breadcrumbItems = [
-//         { title: "Lexa", link: "#" },
-//         { title: "Tables", link: "#" },
-//         { title: "Products Table", link: "#" },
-//     ];
-
-//     useEffect(() => {
-//         props.setBreadcrumbItems('Products Table', breadcrumbItems);
-//         console.log("addd prr")
-//         fetchProducts();
-//     }, [showAddProduct]);
-
-//     const fetchProducts = async () => {
-//         console.log("Data Updated")
-//         try {
-//             const response = await fetch("http://localhost:8000/api/inventory", {
-//                 headers: {
-//                     "Authorization": "Bearer 44|cz0HARoeeIbtXnowBxEZ3PfcBPOhXyxdeKwXGeQ148685478"
-//                 }
-//             });
-//             const data = await response.json();
-//             setProducts(data.data.data);
-//         } catch (error) {
-//             console.error("Error fetching products:", error);
-//         }
-//     };
-
-//     const handleBackToTable = () => {
-//         setShowAddProduct(false); // Go back to the table view
-//     };
-
-//     const handleDownloadExcel = () => {
-//         if (!products || products.length === 0) {
-//             console.error("No data available to download");
-//             return;
-//         }
-
-//         try {
-//             // Map only the specified fields
-//             const excelData = products.filter(product => product.variant.product.is_active).map((item) => ({
-//                 brand_name: item.variant?.product?.brand?.brand_name || "",
-//                 model_name: item.variant?.product?.model_name || "",
-//                 storage_gb: item.variant?.storage_gb || "",
-//                 color: item.variant?.color || "",
-//                 network_type: item?.variant?.network_type || "",
-//                 sku: item?.variant?.product.sku || "",
-//                 imei: item.imei || "",
-//                 serial_no: item.serial_no || "",
-//                 barcode: item.barcode || "",
-//                 condition: item.condition || "",
-//                 description: item?.variant?.product?.description || "",
-//                 selling_price: item.discount_type === 'percentage' 
-//                     ? (item.selling_price - (item.selling_price * (item.discount_price / 100))).toFixed(2) 
-//                     : (item.selling_price - item.discount_price).toFixed(2) || "",
-//                 discount_type: item.discount_type || "",
-//                 discount_price: item.discount_price || "",
-//                 purchase_order_no: item.purchase_order_no || "",
-//                 supplier: item.supplier.user.name || "",
-//                 notes: item.notes || ""
-//             }));
-
-//             // Create a new workbook
-//             const wb = XLSX.utils.book_new();
-//             const ws = XLSX.utils.json_to_sheet(excelData);
-
-//             // Add the worksheet to the workbook
-//             XLSX.utils.book_append_sheet(wb, ws, "Stocklist Data");
-
-//             // Generate the Excel file and trigger download
-//             XLSX.writeFile(wb, "Stocklist_Data.xlsx");
-//         } catch (error) {
-//             console.error("Error generating Excel file:", error);
-//         }
-//     };
-
-//     return (
-//         <React.Fragment>
-//             <Row>
-//                 <Toaster position="top-right" richColors />
-//                 <Col>
-//                     <Card>
-//                         <CardBody>
-//                             {/* Conditionally render the heading and button */}
-//                             {!showAddProduct ? (
-//                                 <Row className="align-items-center mb-3">
-//                                     <Col>
-//                                         <CardTitle className="h4">Products Table</CardTitle>
-//                                     </Col>
-//                                     <Col className="text-end">
-//                                         <Button color="info" style={{ marginRight: 2, padding: '10px 0' }} onClick={handleDownloadExcel}>Download Excel</Button>
-//                                     </Col>
-//                                 </Row>
-//                             ) : (
-//                                 <Row className="align-items-center mb-3">
-//                                     <Col>
-//                                         <CardTitle className="h4">Add Product</CardTitle>
-//                                     </Col>
-//                                     <Col className="text-end">
-//                                         <Button color="secondary" onClick={handleBackToTable}>Back to Table</Button>
-//                                     </Col>
-//                                 </Row>
-//                             )}
-
-//                             {/* Conditionally render the AddProducts component or the table */}
-//                             {showAddProduct ? (
-//                                 <></>
-//                             ) : (
-//                                 <div className="table-rep-plugin">
-//                                     <div className="table-responsive mb-0" data-pattern="priority-columns">
-//                                         <Table id="tech-companies-1" className="table table-striped table-bordered">
-//                                             <Thead>
-//                                                 <Tr>
-//                                                     <Th>Feature Image</Th>
-//                                                     <Th>SKU</Th>
-//                                                     <Th>Brand Name</Th>
-//                                                     <Th>Model</Th>
-//                                                     <Th>Condition</Th>
-//                                                     <Th>Supplier ID</Th>
-//                                                     <Th>Price</Th>
-//                                                     {/* <Th>Selling Price</Th> */}
-//                                                     <Th>Action</Th>
-//                                                     {/* <Th>Order</Th> */}
-//                                                 </Tr>
-//                                             </Thead>
-//                                             <Tbody>
-//                                                 {products.filter(product => product.variant.product.is_active).length > 0 ? (
-//                                                     products.filter(product => product.variant.product.is_active).map((product) => (
-//                                                         <Tr key={product.id}>
-//                                                             <Td><img src={product.variant.product.feature_imageUrl} alt="Feature" width="50" /></Td>
-//                                                             <Td>{product.variant.product.sku}</Td>
-//                                                             <Td>{product.variant.product.brand.brand_name}</Td>
-//                                                             <Td>{product.variant.product.model_name}</Td>
-//                                                             <Td>{product.condition}</Td>
-//                                                             <Td>{product.supplier.user.name}</Td>
-//                                                             {/* <Td>{product.Status}</Td> */}
-//                                                             <Td>
-//                                                                 {product.discount_type === 'percentage'
-//                                                                     ? (product.selling_price - (product.selling_price * (product.discount_price / 100))).toFixed(2)
-//                                                                     : (product.selling_price - product.discount_price).toFixed(2)}
-//                                                             </Td>
-//                                                             <Td>
-//                                                                 <Button color="secondary" onClick={() => { console.log("Order Now") }}>Order Now</Button>
-//                                                             </Td>
-//                                                         </Tr>
-//                                                     ))
-//                                                 ) : (
-//                                                     <Tr>
-//                                                         <Td colSpan="10">No products available.</Td>
-//                                                     </Tr>
-//                                                 )}
-//                                             </Tbody>
-//                                         </Table>
-//                                     </div>
-//                                 </div>
-//                             )}
-//                         </CardBody>
-//                     </Card>
-//                 </Col>
-//             </Row>
-//         </React.Fragment>
-//     );
-// };
-
-// export default connect(null, { setBreadcrumbItems })(UserStock);
-
-
 import React, { useEffect, useState } from "react";
 import { Row, Col, Card, CardBody, CardTitle, Button, Dropdown, DropdownToggle, DropdownMenu, Input, Label, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import { Table, Thead, Tbody, Tr, Th, Td } from "react-super-responsive-table";
@@ -191,6 +7,7 @@ import { setBreadcrumbItems } from "../../store/actions";
 import { useNavigate } from "react-router-dom";
 import { Toaster, toast } from "sonner";
 import * as XLSX from "xlsx";
+import {BASE_URL} from '../../Service';
 
 const UserStock = (props) => {
     document.title = "Products Table | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -240,7 +57,7 @@ const UserStock = (props) => {
 
     const fetchProducts = async (filters = {}) => {
         try {
-            let url = "http://localhost:8000/api/inventory";
+            let url = `${BASE_URL}/inventory`;
             const params = new URLSearchParams();
 
             // Main filters
@@ -760,23 +577,7 @@ const UserStock = (props) => {
                                                                     ? (product.selling_price - (product.selling_price * (product.discount_price / 100))).toFixed(2)
                                                                     : (product.selling_price - product.discount_price).toFixed(2)}
                                                             </Td>
-                                                            {/* <Td>
-                                                                <Button
-                                                                    color="secondary"
-                                                                    onClick={() => {
-                                                                        navigate('/order_now', {
-                                                                            state: {
-                                                                                discountPrice: product.discount_type === 'percentage'
-                                                                                    ? (product.selling_price * (product.discount_price / 100)).toFixed(2)
-                                                                                    : (product.selling_price - product.discount_price).toFixed(2),
-                                                                                productId: product.id
-                                                                            }
-                                                                        });
-                                                                    }}
-                                                                >
-                                                                    Order Now
-                                                                </Button>
-                                                            </Td> */}
+                                                            
                                                         </Tr>
                                                     ))
                                                 ) : (

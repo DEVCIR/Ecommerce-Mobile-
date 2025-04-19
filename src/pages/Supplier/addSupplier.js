@@ -12,6 +12,7 @@ import {
   Button,
 } from "reactstrap";
 import { Toaster, toast } from "sonner";
+import {BASE_URL} from '../../Service';
 
 function AddSupplier({ onBackClick, setViewToTable }) {
   document.title = "Add Supplier | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -31,7 +32,7 @@ function AddSupplier({ onBackClick, setViewToTable }) {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/users");
+        const response = await fetch(`${BASE_URL}/users`);
         const result = await response.json();
         if (result.data) {
           setUsers(result.data);
@@ -68,7 +69,7 @@ function AddSupplier({ onBackClick, setViewToTable }) {
     }
 
     try {
-      const response = await fetch("http://localhost:8000/api/suppliers", {
+      const response = await fetch(`${BASE_URL}/suppliers`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

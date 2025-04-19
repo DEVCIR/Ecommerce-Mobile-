@@ -12,6 +12,7 @@ import {
   Button,
 } from "reactstrap";
 import { Toaster, toast } from "sonner";
+import {BASE_URL} from '../../Service';
 
 function EditEmailTemplate({ onBackClick, template }) {
   document.title = "Edit Email Template | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -43,7 +44,7 @@ function EditEmailTemplate({ onBackClick, template }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:8000/api/email-templates/${template.id}`, {
+      const response = await fetch(`${BASE_URL}/email-templates/${template.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -76,7 +77,7 @@ function EditEmailTemplate({ onBackClick, template }) {
             <CardBody>
               <CardTitle className="h4">Edit Email Template</CardTitle>
               <Form onSubmit={handleSubmit}>
-                {/* Template Name */}
+             
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Template Name</Label>
                   <Col md={10}>
@@ -90,7 +91,7 @@ function EditEmailTemplate({ onBackClick, template }) {
                   </Col>
                 </Row>
 
-                {/* Subject */}
+            
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Subject</Label>
                   <Col md={10}>
@@ -104,7 +105,7 @@ function EditEmailTemplate({ onBackClick, template }) {
                   </Col>
                 </Row>
 
-                {/* Content */}
+              
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Content</Label>
                   <Col md={10}>

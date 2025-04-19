@@ -12,6 +12,7 @@ import {
   Button,
 } from "reactstrap";
 import { Toaster, toast } from "sonner";
+import {BASE_URL} from '../../Service';
 
 function AddMarketplaceItem({ onBackClick, setViewToTable }) {
   document.title = "Add Marketplace Item | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -37,7 +38,7 @@ function AddMarketplaceItem({ onBackClick, setViewToTable }) {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("http://localhost:8000/api/marketplaces", {
+      const response = await fetch(`${BASE_URL}/marketplaces`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

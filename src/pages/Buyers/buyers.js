@@ -3,6 +3,7 @@ import BuyersTable from './buyersTable'
 import AddBuyers from './addBuyers';
 import EditBuyers from './editBuyers';
 
+
 const Buyers = () => {
     const [view, setView] = useState('table');
     const [editProductId, setEditProductId] = useState(null);

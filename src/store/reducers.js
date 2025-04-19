@@ -1,8 +1,8 @@
 import { combineReducers } from "redux"
-
+// import notificationReducer from "../notification/reducer";
+import notificationReducer from "../../src/store/notification/reducer";
 // Front
 import Layout from "./layout/reducer"
-
 import Breadcrumb from "./Breadcrumb/reducer";  
 
 // Authentication
@@ -24,6 +24,7 @@ const rootReducer = combineReducers({
   Layout,
    //Breadcrumb items
    Breadcrumb,
+   Notification: notificationReducer,
   tasks, 
   Login,
   Account,

@@ -3,6 +3,7 @@ import { Row, Col, Card, CardBody, Button, CardTitle } from "reactstrap";
 import { Table, Thead, Tbody, Tr, Th, Td } from "react-super-responsive-table";
 import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
 import { useNavigate } from 'react-router-dom';
+import {BASE_URL} from '../../Service';
 
 const OrderTable = ({ onAddOrderClick }) => {
   const [orders, setOrders] = useState([]);
@@ -13,7 +14,7 @@ const OrderTable = ({ onAddOrderClick }) => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/orders");
+        const response = await fetch(`${BASE_URL}/orders`);
         if (!response.ok) {
           throw new Error("Failed to fetch orders");
         }

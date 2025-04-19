@@ -11,6 +11,7 @@ import {
   Button,
 } from "reactstrap";
 import { Toaster, toast } from "sonner";
+import {BASE_URL} from '../../Service';
 
 function EditExpenseCategory({ onBackClick, category }) {
   document.title = "Edit Expense Category | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -40,7 +41,7 @@ function EditExpenseCategory({ onBackClick, category }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:8000/api/expense-categories/${category.id}`, {
+      const response = await fetch(`${BASE_URL}/expense-categories/${category.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -72,7 +73,7 @@ function EditExpenseCategory({ onBackClick, category }) {
             <CardBody>
               <CardTitle className="h4">Edit Expense Category</CardTitle>
               <Form onSubmit={handleSubmit}>
-                {/* Category Name */}
+                
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Category Name</Label>
                   <Col md={10}>
@@ -87,7 +88,7 @@ function EditExpenseCategory({ onBackClick, category }) {
                   </Col>
                 </Row>
 
-                {/* Description */}
+              
                 <Row className="mb-3">
                   <Label className="col-md-2 col-form-label">Description</Label>
                   <Col md={10}>

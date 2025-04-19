@@ -4,15 +4,16 @@ import { Table, Thead, Tbody, Tr, Th, Td } from "react-super-responsive-table";
 import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
 import { connect } from "react-redux";
 import { setBreadcrumbItems } from "../../store/actions";
-import AddOrderStatus from "./AddOrderStatus"; // Component for adding an order status
+import AddOrderStatus from "./AddOrderStatus"; 
 import { useNavigate } from "react-router-dom";
+import {BASE_URL} from '../../Service';
 
 const OrderStatusTable = (props) => {
   document.title = "Order Status Table | Lexa - Responsive Bootstrap 5 Admin Dashboard";
   const navigate = useNavigate();
 
   const [statuses, setStatuses] = useState([]);
-  const [showAddStatus, setShowAddStatus] = useState(false); // Controls visibility of AddOrderStatus
+  const [showAddStatus, setShowAddStatus] = useState(false); 
 
   const breadcrumbItems = [
     { title: "Lexa", link: "#" },
@@ -27,7 +28,7 @@ const OrderStatusTable = (props) => {
 
   const fetchStatuses = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/order-statuses", {
+      const response = await fetch(`${BASE_URL}/order-statuses`, {
         headers: {
           "Authorization": "Bearer 44|cz0HARoeeIbtXnowBxEZ3PfcBPOhXyxdeKwXGeQ148685478",
         },
@@ -51,7 +52,7 @@ const OrderStatusTable = (props) => {
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`http://localhost:8000/api/order-statuses/${statusId}`, {
+      const response = await fetch(`${BASE_URL}/order-statuses/${statusId}`, {
         method: "DELETE",
         headers: {
           "Authorization": "Bearer 44|cz0HARoeeIbtXnowBxEZ3PfcBPOhXyxdeKwXGeQ148685478",

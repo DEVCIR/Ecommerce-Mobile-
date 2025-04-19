@@ -15,6 +15,7 @@ import { connect } from "react-redux";
 import { setBreadcrumbItems } from "../../store/actions";
 import Select from 'react-select';
 import { Toaster, toast } from "sonner";
+import {BASE_URL} from '../../Service';
 
 function EditCreditNote({ customerId, creditNoteId, onBackClick }) {
     document.title = "Add Product | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -33,12 +34,11 @@ function EditCreditNote({ customerId, creditNoteId, onBackClick }) {
 
     const [categories, setCategories] = useState([]);
     const [users, setUsers] = useState([]);
-    const [rmas, setRmas] = useState([]);
     const [customers, setCustomers] = useState([]);
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch("http://localhost:8000/api/expense-categories");
+            const response = await fetch(`${BASE_URL}/expense-categories`);
             const result = await response.json();
             setCategories(result.data.data);
         } catch (error) {
@@ -46,19 +46,9 @@ function EditCreditNote({ customerId, creditNoteId, onBackClick }) {
         }
     };
 
-    const fetchRMAs = async () => {
-        try {
-            const response = await fetch("http://localhost:8000/api/rmas");
-            const result = await response.json();
-            setRmas(result.data.data);
-        } catch (error) {
-            console.error("Error fetching RMAs:", error);
-        }
-    };
-
     const fetchUsers = async () => {
         try {
-            const response = await fetch("http://localhost:8000/api/users");
+            const response = await fetch(`${BASE_URL}/users`);
             const result = await response.json();
             setUsers(result.data);
         } catch (error) {
@@ -68,7 +58,7 @@ function EditCreditNote({ customerId, creditNoteId, onBackClick }) {
 
     const fetchCustomers = async () => {
         try {
-            const response = await fetch("http://localhost:8000/api/customers");
+            const response = await fetch(`${BASE_URL}/customers`);
             const result = await response.json();
             setCustomers(result.data.data);
         } catch (error) {
@@ -77,23 +67,21 @@ function EditCreditNote({ customerId, creditNoteId, onBackClick }) {
     };
 
     const fetchCreditNoteData = async () => {
-        console.log("Data Id :", customerId)
         try {
-            const response = await fetch(`http://localhost:8000/api/credit-notes/?id=${customerId}`);
+            const response = await fetch(`${BASE_URL}/credit-notes/${creditNoteId}`);
             const result = await response.json();
-            console.log("Result: ", result.data.data[0])
             if (response.ok) {
-                const creditNote = result.data.data[0];
+                const creditNote = result;
                 setFormData({
-                    credit_note_number: creditNote.credit_note_number || '',
-                    rma_id: creditNote.rma_id || 'null',
-                    customer_id: creditNote.customer_id || '',
-                    issue_date: creditNote.issue_date.split('T')[0] || '',
-                    total_amount: creditNote.total_amount || '',
-                    status: creditNote.status || '',
-                    notes: creditNote.notes || '',
-                    created_by: creditNote.created_by.id || '',
-                    is_active: creditNote.is_active || '',
+                    credit_note_number: creditNote.credit_note_number,
+                    rma_id: creditNote.rma_id,
+                    customer_id: creditNote.customer_id,
+                    issue_date: creditNote.issue_date.split('T')[0],
+                    total_amount: creditNote.total_amount,
+                    status: creditNote.status,
+                    notes: creditNote.notes,
+                    created_by: creditNote.created_by,
+                    is_active: creditNote.is_active,
                 });
             } else {
                 toast.error('Error fetching credit note data. Please try again.');
@@ -109,7 +97,6 @@ function EditCreditNote({ customerId, creditNoteId, onBackClick }) {
         fetchCategories();
         fetchUsers();
         fetchCustomers();
-        fetchRMAs();
     }, [customerId]);
 
     const handleChange = (e) => {
@@ -125,7 +112,7 @@ function EditCreditNote({ customerId, creditNoteId, onBackClick }) {
         if (name === "profile_picture") {
             setFormData({
                 ...formData,
-                [name]: files[0], // Store the uploaded file
+                [name]: files[0], 
             });
         }
     };
@@ -133,7 +120,7 @@ function EditCreditNote({ customerId, creditNoteId, onBackClick }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Prepare creditNoteData
+        
         const creditNoteData = {
             credit_note_number: formData.credit_note_number,
             rma_id: formData.rma_id,
@@ -147,8 +134,8 @@ function EditCreditNote({ customerId, creditNoteId, onBackClick }) {
         };
 
         try {
-            // Update credit note data
-            const response = await fetch(`http://localhost:8000/api/credit-notes/${customerId}`, {
+            
+            const response = await fetch(`${BASE_URL}/credit-notes/${creditNoteId}`, {
                 method: "PUT",
                 headers: {
                     'Content-Type': 'application/json',
@@ -183,7 +170,7 @@ function EditCreditNote({ customerId, creditNoteId, onBackClick }) {
                                 <Button color="success" style={{ marginLeft: 2, padding: '5px 15px' }} onClick={onBackClick}>Back</Button>
                             </div>
                             <Form onSubmit={handleSubmit}>
-                                {/* Credit Note Number */}
+                                
                                 <Row className="mb-3">
                                     <Label htmlFor="credit_note_number" className="col-md-2 col-form-label">
                                         Credit Note Number
@@ -200,30 +187,23 @@ function EditCreditNote({ customerId, creditNoteId, onBackClick }) {
                                     </Col>
                                 </Row>
 
-                                {/* RMA ID */}
+                               
                                 <Row className="mb-3">
                                     <Label htmlFor="rma_id" className="col-md-2 col-form-label">
                                         RMA ID
                                     </Label>
                                     <Col md={10}>
                                         <Input
-                                            type="select"
+                                            type="text"
                                             name="rma_id"
                                             id="rma_id"
                                             value={formData.rma_id}
                                             onChange={handleChange}
-                                        >
-                                            <option value="">Select RMA</option>
-                                            {rmas.map(rma => (
-                                                <option key={rma.id} value={rma.id}>
-                                                    {rma.rma_number}
-                                                </option>
-                                            ))}
-                                        </Input>
+                                        />
                                     </Col>
                                 </Row>
 
-                                {/* Customer ID */}
+                               
                                 <Row className="mb-3">
                                     <Label htmlFor="customer_id" className="col-md-2 col-form-label">
                                         Customer
@@ -247,7 +227,7 @@ function EditCreditNote({ customerId, creditNoteId, onBackClick }) {
                                     </Col>
                                 </Row>
 
-                                {/* Issue Date */}
+                             
                                 <Row className="mb-3">
                                     <Label htmlFor="issue_date" className="col-md-2 col-form-label">
                                         Issue Date
@@ -264,7 +244,7 @@ function EditCreditNote({ customerId, creditNoteId, onBackClick }) {
                                     </Col>
                                 </Row>
 
-                                {/* Total Amount */}
+                              
                                 <Row className="mb-3">
                                     <Label htmlFor="total_amount" className="col-md-2 col-form-label">
                                         Total Amount
@@ -281,7 +261,7 @@ function EditCreditNote({ customerId, creditNoteId, onBackClick }) {
                                     </Col>
                                 </Row>
 
-                                {/* Status */}
+                              
                                 <Row className="mb-3">
                                     <Label htmlFor="status" className="col-md-2 col-form-label">
                                         Status
@@ -292,7 +272,6 @@ function EditCreditNote({ customerId, creditNoteId, onBackClick }) {
                                             name="status"
                                             id="status"
                                             value={formData.status}
-                                            style={{ width: '50%' }}
                                             onChange={handleChange}
                                             required
                                         >
@@ -304,7 +283,7 @@ function EditCreditNote({ customerId, creditNoteId, onBackClick }) {
                                     </Col>
                                 </Row>
 
-                                {/* Notes */}
+                              
                                 <Row className="mb-3">
                                     <Label htmlFor="notes" className="col-md-2 col-form-label">
                                         Notes
@@ -320,7 +299,7 @@ function EditCreditNote({ customerId, creditNoteId, onBackClick }) {
                                     </Col>
                                 </Row>
 
-                                {/* Created By */}
+                                
                                 <Row className="mb-3">
                                     <Label htmlFor="created_by" className="col-md-2 col-form-label">
                                         Created By
@@ -344,7 +323,7 @@ function EditCreditNote({ customerId, creditNoteId, onBackClick }) {
                                     </Col>
                                 </Row>
 
-                                {/* Submit Button */}
+                                
                                 <Row className="mb-3">
                                     <Col className="text-end">
                                         <Button type="submit" color="primary">

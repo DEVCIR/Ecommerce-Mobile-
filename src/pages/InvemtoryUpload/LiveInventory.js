@@ -17,6 +17,7 @@ import { setBreadcrumbItems } from "../../store/actions";
 import Select from 'react-select';
 import { Toaster, toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import {BASE_URL} from '../../Service';
 
 function LiveInventory({ props, setShowAddProduct }) {
     const navigate = useNavigate()
@@ -92,7 +93,7 @@ function LiveInventory({ props, setShowAddProduct }) {
 
         const fetchBrands = async () => {
             try {
-                const response = await fetch("http://localhost:8000/api/brands");
+                const response = await fetch(`${BASE_URL}/brands`);
                 const data = await response.json();
                 if (data.success) {
                     const options = data.data.data.map(brand => ({
@@ -131,12 +132,12 @@ function LiveInventory({ props, setShowAddProduct }) {
         if (name === "feature_imageUrl") {
             setFormData({
                 ...formData,
-                [name]: files[0], // Store the single file for feature image
+                [name]: files[0], 
             });
         } else if (name === "all_imageUrls") {
             setFormData({
                 ...formData,
-                [name]: Array.from(files), // Store multiple files for all images
+                [name]: Array.from(files), 
             });
         }
     };
@@ -149,76 +150,6 @@ function LiveInventory({ props, setShowAddProduct }) {
         setShowAdditionalFields(true);
     };
 
-    //   const handleSearch = async () => {
-    //     const { brand_name, model_name } = formData;
-    //     if (brand_name && model_name) {
-    //       try {
-
-    //         const response = await fetch(`http://127.0.0.1:5000/scrape-phone?name=${brand_name} ${model_name}`);
-    //         const data = await response.json();
-
-    //         // Update formData with the fetched data
-    //         setFormData(prevData => ({
-    //           ...prevData,
-    //         }));
-
-    //         // Handle images if needed
-    //         if (data.ImageGallery) {
-    //           setFormData(prevData => ({
-    //             ...prevData,
-    //             feature_imageUrl: data.ImageGallery[0],
-    //             all_imageUrls: data.ImageGallery.map(url => ({
-    //               url: url 
-    //             }))
-    //           }));
-    //         }
-
-    //         setShowAdditionalFields(true)
-
-    //       } catch (error) {
-    //         console.error("Error fetching phone specs:", error);
-    //       }
-    //     } else {
-    //       toast.error('Please enter both Brand Name and model_name');
-    //     }
-    //   };
-
-    //   const generateBarcode = () => {
-    //     return Math.floor(100000 + Math.random() * 900000).toString(); 
-    //   };
-
-    //   const handleSubmit = async (e) => {
-    //     e.preventDefault();
-
-    //     const formDataToSend = new FormData();
-
-    //     // Generate and append barcode
-    //     const generatedBarcode = generateBarcode();
-
-    //     for (const key in formData) {
-    //       formDataToSend.append(key, formData[key]);
-    //     }
-
-
-    //     formDataToSend.append('barcode', generatedBarcode);
-    //     console.log("Barcode: ", generatedBarcode);
-    //     console.log("Data To Upload: ", formData);
-
-    //     try {
-    //       const response = await fetch("http://localhost:8000/api/inventory", {
-    //         method: "POST",
-    //         body: formDataToSend
-    //       });
-
-    //       const result = await response.json();
-    //       console.log('Result', result);
-    //     } catch (error) {
-    //       console.error("Error adding inventory:", error);
-    //       toast.error('Error adding inventory. Please try again.');
-    //     }
-    //   };
-
-
     const handleSearch = async () => {
         const { brand_name, model_name } = formData;
         if (brand_name && model_name) {
@@ -230,13 +161,13 @@ function LiveInventory({ props, setShowAddProduct }) {
                 const imageUrls = data.ImageGallery || [];
                 setImgUrls(imageUrls)
 
-                // Download images via Flask proxy and convert to File objects
+                
                 const imageFiles = await Promise.all(
                     imageUrls.map(async (url, index) => {
                         const proxyUrl = `http://127.0.0.1:5000/download-image?url=${encodeURIComponent(url)}`;
                         const imageResponse = await fetch(proxyUrl);
                         const blob = await imageResponse.blob();
-                        // const ext = blob.type.split("/")[1] || "jpg";
+                        
                         const ext = "jpg";
 
                         return new File([blob], `image_${index}.${ext}`, { type: blob.type });
@@ -270,19 +201,19 @@ function LiveInventory({ props, setShowAddProduct }) {
         const generatedBarcode = generateBarcode();
         formDataToSend.append("barcode", generatedBarcode);
 
-        // Append other form fields except image keys
+        
         for (const key in formData) {
             if (key !== "feature_imageUrl" && key !== "all_imageUrls") {
                 formDataToSend.append(key, formData[key]);
             }
         }
 
-        // ✅ Correct key name for feature image
+        
         if (formData.feature_imageUrl instanceof File) {
             formDataToSend.append("feature_imageUrl", formData.feature_imageUrl);
         }
 
-        // ✅ Correct key name for additional images
+        
         if (Array.isArray(formData.all_imageUrls)) {
             formData.all_imageUrls.forEach((file) => {
                 formDataToSend.append("all_imageUrls[]", file);
@@ -292,7 +223,7 @@ function LiveInventory({ props, setShowAddProduct }) {
         console.log("Barcode: ", generatedBarcode);
 
         try {
-            const response = await fetch("http://localhost:8000/api/inventory", {
+            const response = await fetch(`${BASE_URL}/inventory`, {
                 method: "POST",
                 body: formDataToSend,
             });
@@ -337,7 +268,7 @@ function LiveInventory({ props, setShowAddProduct }) {
                                             onChange={handleChange}
                                             required
                                         />
-                                        {/* Dropdown for selectable options */}
+                                        
                                         <Input
                                             type="select"
                                             name="brand_select"
@@ -516,37 +447,7 @@ function LiveInventory({ props, setShowAddProduct }) {
                                                 />
                                             </Col>
                                         </Row>
-                                        {/* 
-                    <Row className="mb-3">
-                      <Label htmlFor="feature_imageUrl" className="col-md-2 col-form-label">
-                        Feature Image
-                      </Label>
-                      <Col md={10}>
-                        <Input
-                          type="file"
-                          name="feature_imageUrl"
-                          id="feature_imageUrl"
-                          onChange={handleFileChange}
-                          
-                        />
-                      </Col>
-                    </Row>
-
-                    <Row className="mb-3">
-                      <Label htmlFor="all_imageUrls" className="col-md-2 col-form-label">
-                        All Images
-                      </Label>
-                      <Col md={10}>
-                        <Input
-                          type="file"
-                          name="all_imageUrls"
-                          id="all_imageUrls"
-                          onChange={handleFileChange}
-                          multiple
-                        />
-                      </Col>
-                    </Row> */}
-
+                                        
                                         <Row className="mb-3">
                                             <Label htmlFor="supplier_id" className="col-md-2 col-form-label">
                                                 Supplier ID
@@ -682,22 +583,6 @@ function LiveInventory({ props, setShowAddProduct }) {
                                             </Col>
                                         </Row>
 
-                                        {/* <Row className="mb-3">
-                      <Label htmlFor="barcode" className="col-md-2 col-form-label">
-                        Barcode
-                      </Label>
-                      <Col md={10}>
-                        <Input
-                          type="text"
-                          name="barcode"
-                          id="barcode"
-                          value={formDataInventory.barcode}
-                          onChange={handleChangeInventory}
-                          required
-                        />
-                      </Col>
-                    </Row> */}
-
                                         <Row className="mb-3">
                                             <Label htmlFor="location" className="col-md-2 col-form-label">
                                                 Location
@@ -714,37 +599,19 @@ function LiveInventory({ props, setShowAddProduct }) {
                                             </Col>
                                         </Row>
 
-                                        {/* <Row className="mb-3">
-                      <Label htmlFor="platforms" className="col-md-2 col-form-label">
-                        Platforms
-                      </Label>
-                      <Col md={10}>
-                        <Select
-                          isMulti
-                          name="platforms"
-                          options={platformOptions}
-                          className="basic-multi-select"
-                          classNamePrefix="select"
-                          onChange={handlePlatformChange}
-                        />
-                      </Col>
-                    </Row> */}
+                                        
                                     </>
                                 )}
-                                {/* Display fetched images */}
+                              
                                 {formData.all_imageUrls.length > 0 && (
                                     <Row className="mb-3">
                                         <Col>
                                             <h5>Scrapped Images:</h5>
                                             <div className="image-gallery">
                                                 {imgUrls.map((image, index) => (
-                                                    // image.url ? (
+                                                  
                                                         <img key={index} src={image} alt={`Fetched Image ${index + 1}`} style={{ width: '100px', margin: '5px' }} />
-                                                    // ) : (
-                                                    //     <div key={index} style={{ width: '100px', margin: '5px', backgroundColor: '#f0f0f0', textAlign: 'center' }}>
-                                                    //         Image not available
-                                                    //     </div>
-                                                    // )
+                                                
                                                 ))}
                                             </div>
                                         </Col>

@@ -15,6 +15,7 @@ import { connect } from "react-redux";
 import { setBreadcrumbItems } from "../../store/actions";
 import Select from 'react-select';
 import { Toaster, toast } from "sonner";
+import {BASE_URL} from '../../Service';
 
 function EditBuyers({ customerId, onBackClick }) {
     document.title = "Add Product | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -41,7 +42,7 @@ function EditBuyers({ customerId, onBackClick }) {
     useEffect(() => {
         const fetchCustomerData = async () => {
             try {
-                const response = await fetch(`http://localhost:8000/api/customers/?id=${customerId}`);
+                const response = await fetch(`${BASE_URL}/customers/?id=${customerId}`);
                 const result = await response.json();
                 if (response.ok && result.data.data.length > 0) {
                     const customer = result.data.data[0];
@@ -111,7 +112,7 @@ function EditBuyers({ customerId, onBackClick }) {
 
         try {
             // Update User Data
-            const userResponse = await fetch(`http://localhost:8000/api/users/${formData.id}`, {
+            const userResponse = await fetch(`${BASE_URL}/users/${formData.id}`, {
                 method: "POST",
                 headers: {
                     // No need to set Content-Type for FormData, the browser will set it automatically
@@ -128,7 +129,7 @@ function EditBuyers({ customerId, onBackClick }) {
             }
 
             // Update Customer Data
-            const customerResponse = await fetch(`http://localhost:8000/api/customers/${customerId}`, {
+            const customerResponse = await fetch(`${BASE_URL}/customers/${customerId}`, {
                 method: "PUT",
                 headers: {
                     'Content-Type': 'application/json', // Set content type to JSON

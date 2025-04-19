@@ -13,6 +13,7 @@ import {
 } from "reactstrap";
 import { connect } from "react-redux";
 import { setBreadcrumbItems } from "../../store/actions";
+import {BASE_URL} from '../../Service';
 
 function AddOrderStatus({ setShowAddStatus }) {
   document.title = "Add Order Status | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -35,7 +36,7 @@ function AddOrderStatus({ setShowAddStatus }) {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:8000/api/order-statuses", {
+      const response = await fetch(`${BASE_URL}/order-statuses`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
