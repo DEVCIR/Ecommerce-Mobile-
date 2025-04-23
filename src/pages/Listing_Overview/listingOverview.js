@@ -229,7 +229,7 @@ const ListingOverview  = (props) => {
                                                             color="primary"
                                                             onClick={() => toggleModal(listing)}
                                                         >
-                                                            Sell Now
+                                                            Mark as sold
                                                         </Button>                                          
                                                     </Td>                                               
                                                 </Tr>

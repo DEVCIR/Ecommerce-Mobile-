@@ -109,7 +109,6 @@ import InvoiceTable from "pages/Invoice/InvoiceTable"
 import InvoiceUpload from "pages/InvoiceUpload/InvoiceUpload"
 import Subscriber from "pages/Subscriber/subscriber"
 import Supplier from "pages/Supplier/supplier"
-import PurchaseOrder from "pages/PurchaseOrder/purchaseOrder"
 import EmailTemplate from "pages/Email_Template/emailTemplate"
 import EmailCampaign from "pages/Email_Campaign/emailCampaign"
 import ExpenseCategory from "pages/ExpenseCategory/expenseCategory"
@@ -130,6 +129,10 @@ import ListingOverview from "pages/Listing_Overview/listingOverview";
 import BellIcon from "pages/Bell_Icon/bellIcon";
 import InvoiceTemplate from "pages/InvoiceTemplate/invoiceTemplate";
 import CreditNoteAdmin from "pages/CreditNoteAdmin/CreditNoteAdmin"
+import Newsletter from "pages/NewsLetter/newsletter";
+import Vouchers from "pages/Vouchers/vouchers";
+import PromotionalNewsletter from "pages/Promotional Newsletter/promotionalNewsletter"
+import PurchaseOrder from "pages/PurchaseOrder/purchaseOrder"
 
 
 
@@ -163,7 +166,7 @@ const userRoutes = [
   { path: "/invoiceupload", component: <InvoiceUpload /> },
   { path: "/subscriber", component: <Subscriber /> },
   { path: "/supplier", component: <Supplier /> },
-  { path: "/purchaseorder", component: <PurchaseOrder /> },
+  { path: "/purchaseorder", component: <PurchaseOrder />},
   { path: "/emailtemplate", component: <EmailTemplate /> },
   { path: "/emailcampaign", component: <EmailCampaign /> },
   { path: "/expensecategory", component: <ExpenseCategory /> },
@@ -185,6 +188,9 @@ const userRoutes = [
   { path: "/creditnotetable", component: <CreditNote /> },
   { path: "/invoicetemplate", component: <InvoiceTemplate /> },
   { path: "/credit-note-admin", component: <CreditNoteAdmin /> },
+  { path: "/newsletter", component: <Newsletter/>},
+  { path: "/voucher", component: <Vouchers/>},
+  { path: "/promotionalnewsletter", component: <PromotionalNewsletter/>},
 
   // //calendar
   { path: "/calendar", component: <Calendar /> },

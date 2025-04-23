@@ -108,9 +108,9 @@ const BuyersTable = (props) => {
                                             {customers.map(customer => (
                                                 <Tr key={customer.id}>
                                                     <Td>{customer.user.name} {customer.user.last_name}</Td>
-                                                    <Td>{customer.user.email}</Td>
-                                                    <Td>{customer.user.phone_number}</Td>
-                                                    <Td>{customer.customer_type}</Td>
+                                                    <Td>{customer.user.email || "N/A"}</Td>
+                                                    <Td>{customer.user.phone_number || "N/A"}</Td>
+                                                    <Td>{customer.customer_type || "N/A"}</Td>
                                                     <Td>{customer.is_active ? 'Yes' : 'No'}</Td>
                                                     <Td>
                                                         <Button color="warning" onClick={() => onEditCustomer(customer.id)}>Edit</Button>

@@ -23,16 +23,14 @@ const OrderCreditNote = ({ ordersss, onPrintOrder }) => {
     };
 
     const handlePrintData = (order) => {
-        console.log('rearaeraer', orders)
         const reason = reasons[order.id] || '';
         if (reason) {
             const updatedOrder = { ...order, reason };
-            const updatedOrders = orders[0].order.items.map(item => 
+            const updatedOrders = orders[0].order.items.map(item =>
                 item.id === order.id ? updatedOrder : item
             );
 
-            setOrders({
-                ...orders,
+            const reasoning = {
                 orders: [{
                     ...orders[0],
                     order: {
@@ -40,13 +38,54 @@ const OrderCreditNote = ({ ordersss, onPrintOrder }) => {
                         items: updatedOrders
                     }
                 }]
-            });
+            }
 
-            console.log('Updated Orders:', orders);
-            onPrintOrder(updatedOrder); // Call the function passed from CreditNoteAdmin
+            setOrders({
+                orders: [{
+                    ...orders[0],
+                    order: {
+                        ...orders[0].order,
+                        items: updatedOrders
+                    }
+                }]
+            }); 
+
+            console.log('Orders:', updatedOrders);
+            console.log('Updated Orders:', reasoning);
+            onPrintOrder(reasoning); 
         } else {
             console.log(`No reason provided for order ID: ${order.id}`);
         }
+    };
+
+    const handlePrintAllData = () => {
+        const updatedOrders = orders[0].order.items.map(item => {
+            const reason = reasons[item.id] || '';
+            return reason ? { ...item, reason } : item;
+        });
+
+        const reasoning = {
+            orders: [{
+                ...orders[0],
+                order: {
+                    ...orders[0].order,
+                    items: updatedOrders
+                }
+            }]
+        };
+
+        setOrders({
+            orders: [{
+                ...orders[0],
+                order: {
+                    ...orders[0].order,
+                    items: updatedOrders
+                }
+            }]
+        });
+
+        console.log('Updated Orders:', reasoning);
+        onPrintOrder(reasoning);
     };
 
     useEffect(() => {
@@ -99,9 +138,6 @@ const OrderCreditNote = ({ ordersss, onPrintOrder }) => {
                                                                 placeholder="Enter reason"
                                                                 onChange={(e) => handleReasonChange(order.id, e.target.value)}
                                                             />
-                                                            {reasons[order.id] && (
-                                                                <Button onClick={() => handlePrintData(order)}>Print Data</Button>
-                                                            )}
                                                         </Td>
                                                     )}
                                                 </Tr>
@@ -110,6 +146,9 @@ const OrderCreditNote = ({ ordersss, onPrintOrder }) => {
                                     </Table>
                                 </div>
                             </div>
+                            {Object.keys(reasons).some(key => reasons[key]) && (
+                                <Button onClick={() => handlePrintAllData()}>Print All Data</Button>
+                            )}
                         </CardBody>
                     </Card>
                 </Col>

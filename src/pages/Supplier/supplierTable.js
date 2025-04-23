@@ -45,6 +45,29 @@ const SupplierTable = (props) => {
         return value ? value : 'N/A';
     };
 
+    const handleEditClick = (supplierId) => {
+        props.onEditSupplierClick(supplierId);
+    };
+
+    const handleDeleteClick = async (supplierId) => {
+        try {
+            const response = await fetch(`${BASE_URL}/suppliers/${supplierId}`, {
+                method: 'DELETE',
+            });
+            
+            if (response.ok) {
+                // Remove the deleted supplier from state
+                setSupplierData(prevData => prevData.filter(supplier => supplier.id !== supplierId));
+                toast.success('Supplier deleted successfully');
+            } else {
+                const errorData = await response.json();
+                toast.error(errorData.message || 'Failed to delete supplier');
+            }
+        } catch (error) {
+            console.error('Error deleting supplier:', error);
+            toast.error('An error occurred while deleting the supplier');
+        }
+    };
 
     return (
         <React.Fragment>
@@ -58,13 +81,13 @@ const SupplierTable = (props) => {
                                     <CardTitle className="h4">Suppliers</CardTitle>
                                 </Col>
                                 <Col style={{ display: 'flex', gap: '10px' }} className="text-end">
-    <Button color="success" onClick={props.onAddSupplierClick}>
-        Add Supplier
-    </Button>
-    <Button color="success" onClick={props.onUploadSupplierClick}>
-        Upload Supplier File
-    </Button>
-</Col>
+                                    <Button color="success" onClick={props.onAddSupplierClick}>
+                                        Add Supplier
+                                    </Button>
+                                    <Button color="success" onClick={props.onUploadSupplierClick}>
+                                        Upload Supplier File
+                                    </Button>
+                                </Col>
                             </div>
                             
                             {loading ? (
@@ -80,6 +103,7 @@ const SupplierTable = (props) => {
                                                 <th>Tax ID</th>
                                                 <th>Payment Terms</th>
                                                 <th>Notes</th>
+                                                <th>Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -92,6 +116,24 @@ const SupplierTable = (props) => {
                                                         <td>{displayField(supplier.tax_id)}</td>
                                                         <td>{displayField(supplier.payment_terms)}</td>
                                                         <td>{displayField(supplier.notes)}</td>
+                                                        <td>
+                                                            <div style={{ display: 'flex', gap: '5px' }}>
+                                                                <Button 
+                                                                    color="primary" 
+                                                                    size="sm" 
+                                                                    onClick={() => handleEditClick(supplier.id)}
+                                                                >
+                                                                    Edit
+                                                                </Button>
+                                                                <Button 
+                                                                    color="danger" 
+                                                                    size="sm" 
+                                                                    onClick={() => handleDeleteClick(supplier.id)}
+                                                                >
+                                                                    Delete
+                                                                </Button>
+                                                            </div>
+                                                        </td>
                                                     </tr>
                                                 ))
                                             ) : (

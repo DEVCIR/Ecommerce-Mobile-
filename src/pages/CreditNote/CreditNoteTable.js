@@ -75,12 +75,9 @@ const CreditNoteTable = (props) => {
                         <CardBody>
                             <div style={{ 'display': 'flex', 'justifyContent': 'space-between', 'marginBottom': '10px' }}>
                                 <Col>
-                                    <CardTitle className="h4">Expense Table</CardTitle>
+                                    <CardTitle className="h4">Credit Note Table</CardTitle>
                                 </Col>
-                                <div style={{ display: 'flex' }} className="text-end">
-                                
-                                    <Button color="success" style={{ marginLeft: 2, padding: '10px 0' }} onClick={props.onAddBuyerClick}>Add Expense</Button>
-                                </div>
+                               
                             </div>
 
                             <div className="table-rep-plugin">
@@ -99,7 +96,7 @@ const CreditNoteTable = (props) => {
                                                 <Th>Created By</Th>
                                                 <Th>Customer Type</Th>
                                                 <Th>Is Active</Th>
-                                                <Th>Action</Th>
+                                                {/* <Th>Action</Th> */}
                                             </Tr>
                                         </Thead>
                                         <Tbody>
@@ -110,10 +107,10 @@ const CreditNoteTable = (props) => {
                                                     <Td>{creditNote.created_by.name} {creditNote.created_by.last_name}</Td>
                                                     <Td>{creditNote.customer.customer_type}</Td>
                                                     <Td>{creditNote.is_active ? 'Yes' : 'No'}</Td>
-                                                    <Td>
+                                                    {/* <Td>
                                                         <Button color="warning" onClick={() => onEdit(creditNote.id)}>Edit</Button>
                                                         <Button color="danger" onClick={() => handleDelete(creditNote.id)} style={{ marginLeft: '5px' }}>Delete</Button>
-                                                    </Td>
+                                                    </Td> */}
                                                 </Tr>
                                             ))}
                                         </Tbody>

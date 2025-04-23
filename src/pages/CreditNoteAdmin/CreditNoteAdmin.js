@@ -13,6 +13,7 @@ import {
 import InvoiceTable from './InvoiceTable'
 import CustomerTable from './CustomerTable';
 import OrderCreditNote from './OrderCreditNote';
+import CreditNoteInventoryRMA from './CreditNoteInventoryRMA';
 
 const CreditNoteAdmin = () => {
     const [customers, setCustomers] = useState([]);
@@ -90,7 +91,7 @@ const CreditNoteAdmin = () => {
                                 Search User Using Invoice / User Email
                             </p>
 
-                            <Row className="mb-3">
+                            {/* <Row className="mb-3">
                                 <label
                                     htmlFor="customer-select"
                                     className="col-md-2 col-form-label"
@@ -111,7 +112,8 @@ const CreditNoteAdmin = () => {
                                         ))}
                                     </select>
                                 </div>
-                            </Row>
+                            </Row> */}
+                            
                             <Row className="mb-3">
                                 <label
                                     htmlFor="invoice-select"
@@ -149,10 +151,7 @@ const CreditNoteAdmin = () => {
             </Row>
 
             {selectedOrder ? (
-                <div>
-                    <h5>Selected Order Details:</h5>
-                    <pre>{JSON.stringify(selectedOrder, null, 2)}</pre>
-                </div>
+                <CreditNoteInventoryRMA rmaData={selectedOrder}/>
             ) : (
                 <>
                     {searchedInvoice.length > 0 && (

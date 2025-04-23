@@ -3,11 +3,11 @@ import { Row, Col, Card, CardBody, Button, CardTitle, Table } from "reactstrap";
 import { connect } from "react-redux";
 import { setBreadcrumbItems } from "../../store/actions";
 import { Toaster, toast } from "sonner";
-import {BASE_URL} from '../../Service';
+import { BASE_URL } from '../../Service';
 
 const PurchaseOrderTable = (props) => {
     document.title = "Purchase Orders | Lexa - Responsive Bootstrap 5 Admin Dashboard";
-    
+
     const breadcrumbItems = [
         { title: "Lexa", link: "#" },
         { title: "Purchase Orders", link: "#" },
@@ -20,7 +20,7 @@ const PurchaseOrderTable = (props) => {
         try {
             const response = await fetch(`${BASE_URL}/purchase-orders`);
             const result = await response.json();
-            
+
             if (result.data && result.data.data && Array.isArray(result.data.data)) {
                 setPurchaseOrderData(result.data.data);
                 console.log("Purchase orders loaded:", result.data.data);
@@ -51,6 +51,10 @@ const PurchaseOrderTable = (props) => {
         return date.toLocaleDateString();
     };
 
+    const handleViewTemplate = (order) => {
+        props.onSelectOrder(order);
+    };
+
     return (
         <React.Fragment>
             <Toaster position="top-right" richColors />
@@ -59,16 +63,19 @@ const PurchaseOrderTable = (props) => {
                     <Card>
                         <CardBody>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                                <Col>
+                                <div>
                                     <CardTitle className="h4">Purchase Orders</CardTitle>
-                                </Col>
-                                <Col style={{ display: 'flex', gap: '10px' }} className="text-end">
+                                </div>
+                                <div style={{ display: 'flex', gap: '10px' }} className="text-end">
                                     <Button color="success" onClick={props.onAddPurchaseOrderClick}>
                                         Add Purchase Order
                                     </Button>
-                                </Col>
+                                    <Button color="success" onClick={props.onUploadProductOrder}>
+                                        Upload Purchase Order
+                                    </Button>
+                                </div>
                             </div>
-                            
+
                             {loading ? (
                                 <div className="text-center">Loading purchase orders...</div>
                             ) : (
@@ -83,19 +90,25 @@ const PurchaseOrderTable = (props) => {
                                                 <th>Status</th>
                                                 <th>Total Amount</th>
                                                 <th>Notes</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {purchaseOrderData.length > 0 ? (
                                                 purchaseOrderData.map(order => (
                                                     <tr key={order.id}>
-                                                        <td>{displayField(order.supplier.user.name)}</td>
-                                                        <td>{displayField(order.po_number)}</td>
-                                                        <td>{formatDate(order.order_date)}</td>
-                                                        <td>{formatDate(order.expected_delivery_date)}</td>
-                                                        <td>{displayField(order.status)}</td>
-                                                        <td>{order.total_amount ? `$${parseFloat(order.total_amount).toFixed(2)}` : 'N/A'}</td>
-                                                        <td>{displayField(order.notes)}</td>
+                                                        <td>{displayField(order?.supplier?.user?.name)}</td>
+                                                        <td>{displayField(order?.po_number)}</td>
+                                                        <td>{formatDate(order?.order_date)}</td>
+                                                        <td>{formatDate(order?.expected_delivery_date)}</td>
+                                                        <td>{displayField(order?.status)}</td>
+                                                        <td>{order?.total_amount ? `$${parseFloat(order?.total_amount).toFixed(2)}` : 'N/A'}</td>
+                                                        <td>{displayField(order?.notes)}</td>
+                                                        <td>
+                                                            <Button color="info" onClick={() => handleViewTemplate(order)}>
+                                                                Generate Template
+                                                            </Button>
+                                                        </td>
                                                     </tr>
                                                 ))
                                             ) : (

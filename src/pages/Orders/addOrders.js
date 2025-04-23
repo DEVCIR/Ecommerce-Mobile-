@@ -7,6 +7,7 @@ import { Toaster, toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import Select from 'react-select';
 import {BASE_URL} from '../../Service';
+import { runConfetti } from "../Animation/Animation";
 
 const AddOrder = (props) => {
   document.title = "Order Now | Lexa - Responsive Bootstrap 5 Admin Dashboard";
@@ -25,6 +26,13 @@ const AddOrder = (props) => {
   const [inventory, setInventory] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [productQuantities, setProductQuantities] = useState({});
+  const [voucherCode, setVoucherCode] = useState("");
+  const [voucherStatus, setVoucherStatus] = useState(null);
+  const [voucherDetails, setVoucherDetails] = useState(null);
+
+  const [showText, setShowText] = useState(false);
+    const [fadeOut, setFadeOut] = useState(false);
+
 
   const [formData, setFormData] = useState({
     customerName: "",
@@ -36,8 +44,10 @@ const AddOrder = (props) => {
     paymentMethod: "",
     paymentStatus: "Unpaid",
     totalDiscount: "0",
-    notes: ""
-  });
+    notes: "",
+    shippingMethod: "standard", 
+    specialInstructions: "" 
+});
 
   useEffect(() => {
     props.setBreadcrumbItems('Order Now', breadcrumbItems);
@@ -110,6 +120,57 @@ const AddOrder = (props) => {
     }
   }, [location.state, props]);
 
+
+  const checkVoucherCode = async () => {
+    if (!voucherCode.trim()) {
+      toast.error("Please enter a voucher code");
+      return;
+    }
+  
+    try {
+      const response = await fetch(`http://localhost:8000/api/voucher?voucher_code=${voucherCode}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      
+      if (Array.isArray(result) && result.length > 0) {
+
+        const voucher = result[0];
+  console.log("Complete voucher object:", voucher); 
+  console.log("Valid voucher found with ID:", voucher.id);
+  setVoucherStatus(true);
+  setVoucherDetails(voucher);
+
+        // animation
+        setShowText(true);
+            runConfetti();
+        
+            const timer = setTimeout(() => {
+              setFadeOut(true);
+            }, 2000); 
+        
+            const hideTimer = setTimeout(() => {
+              setShowText(false);
+              setFadeOut(false); 
+            }, 3000);
+        
+        toast.success("Voucher is applicable!");
+      } else {
+        setVoucherStatus(false);
+        setVoucherDetails(null);
+        toast.error("No voucher available with this code");
+      }
+    } catch (error) {
+      console.error("Error checking voucher:", error);
+      setVoucherStatus(false);
+      setVoucherDetails(null);
+      toast.error("Failed to check voucher. Please try again.");
+    }
+  };
+
   const calculateTotalAmount = () => {
     return selectedProducts.reduce((total, product) => {
       const quantity = productQuantities[product.value] || 1;
@@ -118,10 +179,25 @@ const AddOrder = (props) => {
   };
 
   const calculateGrandTotal = () => {
-    const totalAmount = calculateTotalAmount();
-    return (totalAmount + 
-           parseFloat(formData.taxAmount || 0) + 
-           parseFloat(formData.shippingAmount || 0)).toFixed(2);
+    let totalAmount = calculateTotalAmount(); 
+  
+    if (voucherStatus && voucherDetails) {
+      if (voucherDetails.discount_type === 'percentage') {
+        // Percentage discount: totalAmount * (discount / 100)
+        totalAmount -= totalAmount * (voucherDetails.voucher_discount / 100);
+      } else if (voucherDetails.discount_type === 'fixed') {
+        // Fixed discount: subtract fixed amount
+        totalAmount -= voucherDetails.voucher_discount;
+      }
+    }
+  
+    // Add tax and shipping (only once)
+    const tax = parseFloat(formData.taxAmount || 0);
+    const shipping = parseFloat(formData.shippingAmount || 0);
+    const grandTotal = totalAmount + tax + shipping;
+  
+    // Return result rounded to 2 decimal places
+    return Math.max(0, grandTotal).toFixed(2);
   };
 
   const calculateTotalDiscount = () => {
@@ -162,138 +238,196 @@ const AddOrder = (props) => {
     }));
   };
 
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    
-    try {
-      const selectedCustomer = customers.find(c => c.user.name === formData.customerName);      
-      if (!selectedCustomer) {
-        alert("Please select a customer");
-        setIsSubmitting(false);
-        return;
-      }
 
-      if (selectedProducts.length === 0) {
-        alert("Please select at least one product");
-        setIsSubmitting(false);
-        return;
-      }
+const handleSubmit = async () => {
+  setIsSubmitting(true);
   
-      const orderData = {
-        order_number: `ORD-${Date.now()}`,
-        customer_id: selectedCustomer.id,
-        created_by: selectedCustomer.user_id,
-        order_date: formData.orderDate,
-        status: formData.status,
-        discount_amount: calculateTotalDiscount(),
-        total_amount: calculateTotalAmount(),
-        tax_amount: formData.taxAmount,
-        shipping_amount: formData.shippingAmount,
-        grand_total: calculateGrandTotal(),
-        payment_method: formData.paymentMethod,
-        payment_status: formData.paymentStatus,
-        shipping_address: formData.shippingAddress,
-        notes: formData.notes,
-        is_active: 1
+  try {
+    const selectedCustomer = customers.find(c => c.user.name === formData.customerName);      
+    if (!selectedCustomer) {
+      alert("Please select a customer");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (selectedProducts.length === 0) {
+      alert("Please select at least one product");
+      setIsSubmitting(false);
+      return;
+    }
+
+    const orderData = {
+      order_number: `ORD-${Date.now()}`,
+      customer_id: selectedCustomer.id,
+      created_by: selectedCustomer.user_id,
+      order_date: formData.orderDate,
+      status: formData.status,
+      discount_amount: calculateTotalDiscount(),
+      total_amount: calculateTotalAmount(),
+      tax_amount: formData.taxAmount,
+      shipping_amount: formData.shippingAmount,
+      grand_total: calculateGrandTotal(),
+      payment_method: formData.paymentMethod,
+      payment_status: formData.paymentStatus,
+      shipping_address: formData.shippingAddress,
+      notes: formData.notes,
+      is_active: 1,
+      voucher_id: voucherStatus && voucherDetails ? voucherDetails.id : null
+    };
+
+    const orderResponse = await fetch(`${BASE_URL}/orders`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(orderData)
+    });
+
+    const orderResult = await orderResponse.json();
+    console.log("Order creation response:", orderResult);
+
+    if (!orderResponse.ok) {
+      throw new Error(orderResult.message || "Failed to create order");
+    }
+
+    // Create order items for each selected product
+    for (const product of selectedProducts) {
+      const orderItemData = {
+        order_id: orderResult.id,  
+        inventory_id: product.value,
+        quantity: productQuantities[product.value] || 1,
+        unit_price: product.price,
+        discount_amount: (product.discount) * (productQuantities[product.value] || 1),
+        total_price: (product.price * (productQuantities[product.value] || 1) - ( ( product.discount)  * (productQuantities[product.value] || 1))),
       };
-  
-      const orderResponse = await fetch(`${BASE_URL}/orders`, {
+
+      const orderItemResponse = await fetch(`${BASE_URL}/order-items`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(orderData)
+        body: JSON.stringify(orderItemData)
       });
-  
-      const orderResult = await orderResponse.json();
-  
-      if (!orderResponse.ok) {
-        throw new Error(orderResult.message || "Failed to create order");
+
+      if (!orderItemResponse.ok) {
+        const orderItemResult = await orderItemResponse.json();
+        throw new Error(orderItemResult.message || "Failed to create order items");
       }
-  
-      // Create order items for each selected product
-      for (const product of selectedProducts) {
-        const orderItemData = {
-          order_id: orderResult.id,  
-          inventory_id: product.value,
-          quantity: productQuantities[product.value] || 1,
-          unit_price: product.price,
-          discount_amount: (product.discount) * (productQuantities[product.value] || 1),
-          total_price: (product.price * (productQuantities[product.value] || 1) - ( ( product.discount)  * (productQuantities[product.value] || 1))),
-        };
+    }
 
-        console.log("mm", orderItemData);
-  
-        const orderItemResponse = await fetch(`${BASE_URL}/order-items`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(orderItemData)
-        });
-  
-        if (!orderItemResponse.ok) {
-          const orderItemResult = await orderItemResponse.json();
-          throw new Error(orderItemResult.message || "Failed to create order items");
-        }
-      }
-        // Utility functions
+    // Generate invoice
+    const generateInvoiceNumber = () => {
+      const year = new Date().getFullYear();
+      const randomDigits = Math.floor(100 + Math.random() * 900);
+      return `INV-${year}${randomDigits}`;
+    };
+    
+    const getTodayDate = () => new Date().toISOString().split("T")[0];
 
-const generateInvoiceNumber = () => {
-    const year = new Date().getFullYear();
-    const randomDigits = Math.floor(100 + Math.random() * 900); // e.g. 123
-    return `INV-${year}${randomDigits}`;
-  };
-  
-  const getTodayDate = () => new Date().toISOString().split("T")[0];
+    const getDueDate = () => {
+      const date = new Date();
+      date.setDate(date.getDate() + 5);
+      return date.toISOString().split("T")[0];
+    };
+    
+    const invoiceData = {
+      invoice_number: generateInvoiceNumber(),
+      order_id: orderResult.id,
+      customer_id: selectedCustomer.id,
+      created_by: selectedCustomer.user_id,
+      invoice_date: getTodayDate(),
+      due_date: getDueDate(),
+      status: "Paid",
+      template_used: "Standard",
+      notes: "This is a test invoice",
+      is_active: 1,
+    };
+    
+    const invoiceResponse = await fetch(`${BASE_URL}/invoices`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(invoiceData)
+    });
 
-  const getDueDate = () => {
-    const date = new Date();
-    date.setDate(date.getDate() + 5); // Add 5 days
-    return date.toISOString().split("T")[0];
-  };
-  
-  
-  // Main object
-  const invoiceData = {
-    invoice_number: generateInvoiceNumber(),
-    order_id: orderResult.id,
-    customer_id: selectedCustomer.id,
-    created_by: selectedCustomer.user_id,
-    invoice_date: getTodayDate(),
-    due_date: getDueDate(),
-    status: "Paid",
-    template_used: "Standard",
-    notes: "This is a test invoice",
-    is_active: 1,
-  };
-  
-  console.log("My Invoice ",invoiceData)
+    if (!invoiceResponse.ok) {
+      const invoiceResult = await invoiceResponse.json();
+      throw new Error(invoiceResult.message || "Failed to create invoice");
+    }
 
-const invoiceResponse = await fetch(`${BASE_URL}/invoices`, {
+    // Generate delivery note
+    const generateDeliveryNumber = () => {
+      const randomDigits = Math.floor(1000 + Math.random() * 9000);
+      return `DEV-${randomDigits}`;
+    };
+
+    const generateTrackingNumber = () => {
+      const randomDigits = Math.floor(1000 + Math.random() * 9000);
+      return `TRA-${randomDigits}`;
+    };
+
+    const deliveryNoteData = {
+      delivery_number: generateDeliveryNumber(),
+      order_id: orderResult.id,
+      customer_id: selectedCustomer.id,
+      delivery_date: new Date().toISOString().split("T")[0],
+      shipping_method: formData.shippingMethod || "standard",
+      tracking_number: generateTrackingNumber(),
+      status: "Preparing",
+      notes: formData.specialInstructions || "",
+      created_by: selectedCustomer.user_id,
+      is_active: 1
+    };
+
+    const deliveryNoteResponse = await fetch(`${BASE_URL}/delivery-notes`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(deliveryNoteData)
+    });
+
+    if (!deliveryNoteResponse.ok) {
+      const deliveryNoteResult = await deliveryNoteResponse.json();
+      throw new Error(deliveryNoteResult.message || "Failed to create delivery note");
+    }
+
+    const deliveryNoteResult = await deliveryNoteResponse.json();
+
+    // Create delivery note items for each selected product
+    for (const product of selectedProducts) {
+      const deliveryNoteItemData = {
+        delivery_note_id: deliveryNoteResult.id,  
+        inventory_id: product.value,
+        quantity: productQuantities[product.value] || 1,
+      };
+
+      const deliveryNoteItemResponse = await fetch(`${BASE_URL}/delivery-note-items`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(invoiceData)
+        body: JSON.stringify(deliveryNoteItemData)
       });
 
-      if (!invoiceResponse.ok) {
-        const invoiceResult = await invoiceResponse.json();
-        throw new Error(invoiceResult.message || "Failed to create order items");
+      if (!deliveryNoteItemResponse.ok) {
+        const deliveryNoteItemResult = await deliveryNoteItemResponse.json();
+        throw new Error(deliveryNoteItemResult.message || "Failed to create delivery note items");
       }
+    }
 
     toast.success("Order has been placed successfully");
-      setTimeout(() => {
-        props.onBackClick();
-      }, 2000);
-    } catch (error) {
-      console.error("Error submitting order:", error);
-      toast.error(`An error occurred: ${error.message}`);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    setTimeout(() => {
+      props.onBackClick();
+    }, 2000);
+  } catch (error) {
+    console.error("Error submitting order:", error);
+    toast.error(`An error occurred: ${error.message}`);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   const inventoryOptions = inventory.map(item => ({
     value: item.id,
@@ -362,7 +496,6 @@ const invoiceResponse = await fetch(`${BASE_URL}/invoices`, {
 {selectedProducts.map(product => (
 
 <>
-{console.log("Is db: ",product)}
 <Row className="mb-3">
   <label htmlFor="productPrice" className="col-md-2 col-form-label">
   {product.label} Price
@@ -578,6 +711,54 @@ const invoiceResponse = await fetch(`${BASE_URL}/invoices`, {
     />
   </div>
 </Row>
+
+<Row className="mb-3">
+  <label htmlFor="grandTotal" className="col-md-2 col-form-label">
+    Voucher / Promo Code
+  </label>
+  <div className="col-md-8">
+    <input
+      className="form-control"
+      type="text"
+      value={voucherCode}
+      onChange={(e) => setVoucherCode(e.target.value)}
+      placeholder="Enter voucher code"
+    />
+    {voucherStatus === true && voucherDetails && (
+      <div className="text-success mt-1">
+        Voucher applied: {voucherDetails.voucher_code} ({voucherDetails.voucher_discount}{voucherDetails.discount_type === 'percentage' ? '%' : '$'} off)
+      </div>
+    )}
+
+    {voucherStatus === false && (
+      <div className="text-danger mt-1">
+        Invalid voucher code
+      </div>
+    )}
+
+    {/* animation */}
+    {showText && (
+      <div
+        className={`w-40 h-40 flex items-center justify-center bg-green-600 text-white text-center text-lg font-bold rounded-full z-[99999] transition-all duration-1000 ${
+          fadeOut ? "opacity-0 scale-50" : "opacity-100 scale-100"
+        }`}
+      >
+        <p className="text-2xl leading-normal tracking-normal">Voucher Available</p>
+      </div>
+    )}
+  </div>
+  <div className="col-md-2">
+    {voucherCode.trim() !== "" && (
+      <Button 
+        color="primary" 
+        onClick={checkVoucherCode}
+        className="w-100"
+      >
+        Apply
+      </Button>
+    )}
+  </div>
+</Row>
               
               <Row className="mb-3">
                 <label htmlFor="grandTotal" className="col-md-2 col-form-label">
@@ -643,6 +824,55 @@ const invoiceResponse = await fetch(`${BASE_URL}/invoices`, {
                     value={formData.notes}
                     onChange={handleInputChange}
                     rows="3"
+                  />
+                </div>
+              </Row>
+
+              <Row className="mb-3 mt-4">
+                <Col>
+                  <h5>Delivery Details:</h5>
+                </Col>
+              </Row>
+
+              <Row className="mb-3">
+                <label htmlFor="shippingMethod" className="col-md-2 col-form-label">
+                  Shipping Method
+                </label>
+                <div className="col-md-10">
+                  <select
+                    className="form-control"
+                    id="shippingMethod"
+                    name="shippingMethod"
+                    value={formData.shippingMethod || "standard"}
+                    onChange={handleInputChange}
+                  >
+                    <option value="standard">Standard Shipping</option>
+                    <option value="express">Express Shipping</option>
+                    <option value="overnight">Overnight Shipping</option>
+                    <option value="two-day">Two-Day Shipping</option>
+                    <option value="international">International Shipping</option>
+                    <option value="freight">Freight Shipping</option>
+                    <option value="dropshipping">Dropshipping</option>
+                    <option value="local-courier">Local Courier Services</option>
+                    <option value="pickup">In-Store Pickup / Click & Collect</option>
+                  </select>
+                </div>
+              </Row>
+
+
+              <Row className="mb-3">
+                <label htmlFor="specialInstructions" className="col-md-2 col-form-label">
+                  Special Instructions
+                </label>
+                <div className="col-md-10">
+                  <input
+                    className="form-control"
+                    type="text"
+                    id="specialInstructions"
+                    name="specialInstructions"
+                    value={formData.specialInstructions || ""}
+                    onChange={handleInputChange}
+                    placeholder="Any special delivery instructions"
                   />
                 </div>
               </Row>

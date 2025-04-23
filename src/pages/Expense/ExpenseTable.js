@@ -94,10 +94,10 @@ const ExpenseTable = (props) => {
                                     >
                                         <Thead>
                                             <Tr>
-                                                <Th>Name</Th>
+                                            <Th>Expense Category</Th>
+                                                <Th>Description</Th>
                                                 <Th>Amount</Th>
                                                 <Th>Recorded By</Th>
-                                                <Th>Customer Type</Th>
                                                 <Th>Is Active</Th>
                                                 <Th>Action</Th>
                                             </Tr>
@@ -105,10 +105,11 @@ const ExpenseTable = (props) => {
                                         <Tbody>
                                             {customers.map(expense => (
                                                 <Tr key={expense.id}>
+                                                    <Td>{expense.category.category_name}</Td>
                                                     <Td>{expense.description}</Td>
                                                     <Td>{expense.amount}</Td>
                                                     <Td>{expense.recorded_by.name} {expense.recorded_by.last_name}</Td>
-                                                    <Td>{expense.category.category_name}</Td>
+                                                    
                                                     <Td>{expense.is_active ? 'Yes' : 'No'}</Td>
                                                     <Td>
                                                         <Button color="primary" onClick={() => onEdit(expense.id)}>Edit</Button>

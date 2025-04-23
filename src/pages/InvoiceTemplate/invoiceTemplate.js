@@ -1,51 +1,52 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 export default function InvoiceTemplate() {
-  // Ref for the invoice content
   const invoiceRef = useRef(null);
-  
-  // Store field names in arrays
   const invoiceFields = ['Invoice No', 'Invoice Date', 'Due Date'];
-  const invoiceValues = {
-    'Invoice No': '#INV123',
-    'Invoice Date': '04/19/2025',
-    'Due Date': '04/19/2025'
-  };
+  const location = useLocation();
+  const invoiceData = location.state || {};
+  const [invoiceValues, setInvoiceValues] = useState({
+    'Invoice No': invoiceData.invoiceNumber || '#INV123',
+    'Invoice Date': invoiceData.invoiceDate || '04/19/2025',
+    'Due Date': invoiceData.dueDate || '04/19/2025'
+  });
   
-  const paymentFields = ['Account', 'A/C Name', 'Bank Details'];
   const [paymentValues, setPaymentValues] = useState({
     'Account': '',
     'A/C Name': '',
     'Bank Details': ''
   });
   
-  // Company details
-  const [companyName, setCompanyName] = useState('');
-  const [recipientName, setRecipientName] = useState('');
   
-  // State for invoice items
-  const [items, setItems] = useState([]);
+  const [companyName, setCompanyName] = useState('');
+  const [recipientName, setRecipientName] = useState(invoiceData.customerName || '');
+  const [items, setItems] = useState(invoiceData.items || []);
+  const [profilePicture, setProfilePicture] = useState(invoiceData.profilePicture || '');
+  const [useTax, setUseTax] = useState(true);
+  const [useTaxFixed, setUseTaxFixed] = useState(true);
+  const [taxFixed, setTaxFixed] = useState(invoiceData.taxFixed || 0);
   const [subtotal, setSubtotal] = useState(0);
   const [taxRate, setTaxRate] = useState(10);
   const [taxAmount, setTaxAmount] = useState(0);
   const [total, setTotal] = useState(0);
 
-  // Add a new empty row
   const addNewRow = () => {
-    setItems([...items, { description: '', qty: '', rate: '', amount: 0 }]);
+    if (items.length === 0) {
+      setItems([...items, { description: '', qty: '', rate: '', amount: 0 }]);
+    }
   };
 
-  // Remove a row at specified index
   const removeRow = (indexToRemove) => {
     setItems(items.filter((_, index) => index !== indexToRemove));
   };
 
-  // Update an item in the invoice
   const updateItem = (index, field, value) => {
     const newItems = [...items];
     newItems[index][field] = value;
     
-    // Calculate amount if qty or rate changes
     if (field === 'qty' || field === 'rate') {
       const qty = parseFloat(field === 'qty' ? value : newItems[index].qty) || 0;
       const rate = parseFloat(field === 'rate' ? value : newItems[index].rate) || 0;
@@ -55,24 +56,17 @@ export default function InvoiceTemplate() {
     setItems(newItems);
   };
   
-  // Update payment info
-  const updatePaymentInfo = (field, value) => {
-    setPaymentValues({
-      ...paymentValues,
-      [field]: value
-    });
-  };
-
-  // Calculate totals whenever items change
   useEffect(() => {
     const newSubtotal = items.reduce((sum, item) => sum + (item.amount || 0), 0);
     setSubtotal(newSubtotal);
     
-    const newTaxAmount = newSubtotal * (taxRate / 100);
-    setTaxAmount(newTaxAmount);
-    
-    setTotal(newSubtotal + newTaxAmount);
-  }, [items, taxRate]);
+    const newTaxAmount = useTax ? newSubtotal * (taxRate / 100) : 0;
+  setTaxAmount(newTaxAmount);
+  
+  const fixedTax = useTaxFixed ? parseFloat(taxFixed) : 0;
+  
+  setTotal(newSubtotal + newTaxAmount + fixedTax);
+}, [items, taxRate, taxFixed, useTax, useTaxFixed]);
 
   // Add initial empty row
   useEffect(() => {
@@ -81,66 +75,50 @@ export default function InvoiceTemplate() {
     }
   }, []);
   
-  // Function to handle invoice download
-  const downloadPDF = () => {
-    // Prepare invoice data for logging
-    const invoiceData = {
-      company: companyName || 'Not specified',
-      recipient: recipientName || 'Not specified',
-      invoiceDetails: invoiceValues,
-      items: items,
-      paymentInfo: paymentValues,
-      calculations: {
-        subtotal,
-        taxRate,
-        taxAmount,
-        total
-      }
-    };
+const downloadPDF = () => {
+  const input = invoiceRef.current;
+  
+  // Get the actual width of the invoice content
+  const invoiceWidth = input.offsetWidth;
+  const invoiceHeight = input.offsetHeight;
+  
+  // Calculate the optimal scale for A4 paper (210mm x 297mm)
+  const pdfWidth = 210; // mm
+  const pdfHeight = 297; // mm
+  
+  // Convert mm to pixels (1mm = 3.78px at 96dpi)
+  const pdfWidthPx = pdfWidth * 3.78;
+  const pdfHeightPx = pdfHeight * 3.78;
+  
+  // Calculate scale to fit content width to PDF width
+  const scale = Math.min(pdfWidthPx / invoiceWidth, 1);
+  
+  html2canvas(input, {
+    scale: scale,
+    logging: false,
+    useCORS: true,
+    allowTaint: true,
+    windowWidth: invoiceWidth,
+    windowHeight: invoiceHeight
+  }).then((canvas) => {
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('p', 'mm', 'a4');
     
-    // Log data to console
-    console.log('Invoice Data for PDF:', invoiceData);
+    // Calculate image dimensions to fit PDF page
+    const imgWidth = pdfWidth - 20; // Add margins
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
     
-    // In a real application, this would use a library like jsPDF or html2pdf
-    // Since we can't import external libraries beyond those specified,
-    // we'll simulate the PDF generation with this approach
+    // Center the image on the page
+    const xPos = (pdfWidth - imgWidth) / 2;
+    let yPos = 10; // Start with top margin
     
-    // Create a simple text representation of the invoice (in real apps, this would be formatted properly)
-    const invoiceText = `
-INVOICE #${invoiceValues['Invoice No']}
-Date: ${invoiceValues['Invoice Date']}
-Due Date: ${invoiceValues['Due Date']}
+    // Add first page
+    pdf.addImage(imgData, 'PNG', xPos, yPos, imgWidth, imgHeight);
+    yPos += imgHeight;    
+    pdf.save(`Invoice_${invoiceValues['Invoice No'].replace('#', '')}.pdf`);
+  });
+};
 
-From: ${companyName || 'Your Company'}
-To: ${recipientName || 'Recipient'}
-
-Items:
-${items.map(item => `${item.description || 'Item'} - Qty: ${item.qty || '0'}, Rate: ${item.rate || '0.00'}, Amount: ${item.amount ? item.amount.toFixed(2) : '0.00'}`).join('\n')}
-
-Subtotal: ${subtotal.toFixed(2)}
-Tax (${taxRate}%): ${taxAmount.toFixed(2)}
-Total: ${total.toFixed(2)}
-
-Payment Information:
-${Object.entries(paymentValues)
-    .filter(([_, value]) => value)
-    .map(([key, value]) => `${key}: ${value}`)
-    .join('\n')}
-    `;
-    
-    // Create a Blob with the invoice text
-    const blob = new Blob([invoiceText], { type: 'application/pdf' });
-    const url = URL.createObjectURL(blob);
-    
-    // Create a link to download the blob
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `Invoice_${invoiceValues['Invoice No'].replace('#', '')}`.pdf;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
 
   return (
     <div style={{ 
@@ -159,7 +137,6 @@ ${Object.entries(paymentValues)
         }}>INVOICE</h1>
         
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-          {/* Left side - Company info */}
           <div style={{ width: '40%' }}>
             <div style={{ 
               border: '1px dashed #ccc', 
@@ -173,12 +150,23 @@ ${Object.entries(paymentValues)
               justifyContent: 'center',
               minHeight: '100px'
             }}>
-              <div style={{ color: '#a0c0e0', fontSize: '24px', marginBottom: '5px' }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                </svg>
-              </div>
+          <div>
+  <input
+    type="file"
+    id="upload-img"
+    accept="image/png, image/jpeg"
+    style={{ display: 'none' }}
+  />
+  <label htmlFor="upload-img" style={{ cursor: 'pointer', display: 'inline-block' }}>
+    <div style={{ color: '#a0c0e0', fontSize: '24px', marginBottom: '5px' }}>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+      </svg>
+    </div>
+  </label>
+</div>
+
               <span style={{ color: '#a0c0e0', fontSize: '14px' }}>Upload Image</span>
             </div>
             
@@ -199,14 +187,14 @@ ${Object.entries(paymentValues)
                     <circle cx="12" cy="7" r="4"></circle>
                   </svg>
                 </div>
-                <span style={{ fontWeight: '500', color: '#666' }}>Company name</span>
+                <span style={{ fontWeight: '500', color: '#666' }}>XYZ Company</span>
               </div>
               <div style={{ paddingLeft: '32px' }}>
                 <input 
                   type="text" 
                   value={companyName} 
                   onChange={(e) => setCompanyName(e.target.value)}
-                  placeholder="Add your company details"
+                  placeholder="xyz company details"
                   style={{ 
                     width: '100%', 
                     border: 'none', 
@@ -220,64 +208,139 @@ ${Object.entries(paymentValues)
             </div>
           </div>
           
-          {/* Right side - Billing info and invoice details */}
-          <div style={{ width: '55%' }}>
-            <div style={{ marginBottom: '20px' }}>
-              <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>BILLED TO :</div>
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
-                <div style={{ 
-                  width: '24px', 
-                  height: '24px', 
-                  borderRadius: '50%', 
-                  background: '#e0e0e0', 
-                  display: 'flex', 
-                  justifyContent: 'center', 
-                  alignItems: 'center', 
-                  marginRight: '8px' 
-                }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                  </svg>
-                </div>
-                <span style={{ fontWeight: '500', color: '#666' }}>Recipient</span>
-              </div>
-              <div style={{ paddingLeft: '32px' }}>
-                <input 
-                  type="text" 
-                  value={recipientName} 
-                  onChange={(e) => setRecipientName(e.target.value)}
-                  placeholder="Add invoice recipient details"
-                  style={{ 
-                    width: '100%', 
-                    border: 'none', 
-                    background: 'transparent', 
-                    outline: 'none',
-                    color: '#999',
-                    fontSize: '13px'
-                  }} 
-                />
-              </div>
-            </div>
-            
-            <div style={{ 
-              background: '#f7faff', 
-              borderRadius: '4px', 
-              padding: '15px',
-              marginBottom: '20px'
-            }}>
-              {invoiceFields.map((field, index) => (
-                <div key={index} style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between',
-                  marginBottom: index < invoiceFields.length - 1 ? '8px' : 0
-                }}>
-                  <div style={{ fontWeight: '500', color: '#555' }}>{field} :</div>
-                  <div style={{ color: '#333' }}>{invoiceValues[field]}</div>
-                </div>
-              ))}
-            </div>
+<div style={{ width: '55%' }}>
+  <div style={{ marginBottom: '20px' }}>
+    <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>BILLED TO :</div>
+    
+    {/* Customer Profile Section */}
+    <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '10px' }}>
+      {/* Profile Picture Container */}
+      <div style={{ 
+        width: '30px', 
+        height: '30px', 
+        borderRadius: '50%', 
+        overflow: 'hidden',
+        marginRight: '12px',
+        flexShrink: 0,
+        backgroundColor: '#f0f0f0'
+      }}>
+        {profilePicture ? (
+          <img 
+            src={`${profilePicture}`} 
+            alt="Customer" 
+            style={{ 
+              width: '80%', 
+              height: '80%', 
+              objectFit: 'cover',
+              display: 'block' 
+            }}
+            onError={(e) => {
+              e.target.style.display = 'none';
+              e.target.parentNode.style.backgroundColor = '#e0e0e0';
+            }}
+          />
+        ) : (
+          <div style={{
+            width: '80%',
+            height: '80%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#999',
+            fontSize: '12px'
+          }}>
+            No Image
           </div>
+        )}
+      </div>
+
+      {/* Customer Info */}
+      <div style={{ flex: 1 }}>
+        <div style={{ fontWeight: '500', color: '#666', marginBottom: '8px' }}>
+          {recipientName || 'Customer name'}
+        </div>
+
+        <div style={{ marginBottom: '5px' }}>
+          <input 
+            type="text" 
+            value={recipientName} 
+            onChange={(e) => setRecipientName(e.target.value)}
+            placeholder="Customer name"
+            style={{ 
+              width: '100%', 
+              border: 'none', 
+              background: 'transparent', 
+              outline: 'none',
+              color: '#666',
+              fontSize: '13px',
+              padding: '3px 0'
+            }} 
+          />
+        </div>
+
+        <div style={{ marginBottom: '5px' }}>
+          <input 
+            type="email" 
+            value={invoiceData.customerEmail || ''} 
+            onChange={(e) => {}}
+            placeholder="Email of Customer"
+            style={{ 
+              width: '100%', 
+              border: 'none', 
+              background: 'transparent', 
+              outline: 'none',
+              color: '#666',
+              fontSize: '13px',
+              padding: '3px 0'
+            }} 
+            readOnly
+          />
+        </div>
+
+        <div>
+          <input 
+            type="text" 
+            value={invoiceData.customerCity || ''} 
+            onChange={(e) => {}}
+            placeholder="Address of Customer (City + Country)"
+            style={{ 
+              width: '100%', 
+              border: 'none', 
+              background: 'transparent', 
+              outline: 'none',
+              color: '#666',
+              fontSize: '13px',
+              padding: '3px 0'
+            }} 
+            readOnly
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  {/* Invoice Details Section */}
+  <div style={{ 
+    background: '#f7faff', 
+    borderRadius: '4px', 
+    padding: '15px',
+    marginBottom: '20px'
+  }}>
+    {invoiceFields.map((field, index) => (
+      <div 
+        key={index} 
+        style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between',
+          marginBottom: index < invoiceFields.length - 1 ? '8px' : 0
+        }}
+      >
+        <div style={{ fontWeight: '500', color: '#555' }}>{field} :</div>
+        <div style={{ color: '#333' }}>{invoiceValues[field]}</div>
+      </div>
+    ))}
+  </div>
+</div>
         </div>
         
         {/* Invoice items table */}
@@ -374,42 +437,10 @@ ${Object.entries(paymentValues)
         </div>
         
         {/* Payment info and Totals section */}
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', justifyContent: 'right',alignItems:'right'
+         }}>
           {/* Payment Info */}
-          <div style={{ width: '48%' }}>
-            <h3 style={{ fontSize: '14px', fontWeight: '500', marginBottom: '10px' }}>Payment Info :</h3>
-            
-            {paymentFields.map((field, index) => (
-              <div key={index} style={{ marginBottom: '8px' }}>
-                <div style={{ fontSize: '14px', color: '#555', marginBottom: '3px' }}>{field} :</div>
-                <input 
-                  type="text" 
-                  value={paymentValues[field]} 
-                  onChange={(e) => updatePaymentInfo(field, e.target.value)}
-                  style={{ 
-                    width: '100%', 
-                    padding: '5px 0', 
-                    border: 'none', 
-                    borderBottom: '1px solid #ddd',
-                    outline: 'none'
-                  }} 
-                />
-              </div>
-            ))}
-            
-            {/* Terms & Conditions */}
-            <div style={{ marginTop: '20px' }}>
-              <h3 style={{ fontSize: '14px', fontWeight: '500', marginBottom: '10px' }}>Terms & Conditions</h3>
-              <p style={{ 
-                fontSize: '13px', 
-                color: '#666', 
-                fontStyle: 'italic', 
-                lineHeight: '1.5' 
-              }}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-              </p>
-            </div>
-          </div>
+     
           
           {/* Totals */}
           <div style={{ width: '48%' }}>
@@ -424,31 +455,61 @@ ${Object.entries(paymentValues)
             </div>
             
             <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center',
-              padding: '10px 0', 
-              borderBottom: '1px solid #eee' 
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <span style={{ marginRight: '10px' }}>Tax</span>
-                <input 
-                  type="number" 
-                  value={taxRate}
-                  onChange={(e) => setTaxRate(parseFloat(e.target.value) || 0)}
-                  style={{ 
-                    width: '40px', 
-                    padding: '2px 5px', 
-                    border: '1px solid #ddd',
-                    borderRadius: '3px',
-                    textAlign: 'center'
-                  }} 
-                />
-                <span style={{ marginLeft: '5px' }}>%</span>
-              </div>
-              <span>{taxAmount.toFixed(2)}</span>
-            </div>
+  display: 'flex', 
+  justifyContent: 'space-between', 
+  alignItems: 'center',
+  padding: '10px 0', 
+  borderBottom: '1px solid #eee' 
+}}>
+  <div style={{ display: 'flex', alignItems: 'center' }}>
+    <input
+      type="checkbox"
+      checked={useTax}
+      onChange={() => setUseTax(!useTax)}
+      style={{ marginRight: '10px' }}
+    />
+    <span style={{ marginRight: '10px' }}>Tax</span>
+    {useTax && (
+      <>
+        <input 
+          type="number" 
+          value={taxRate}
+          onChange={(e) => setTaxRate(parseFloat(e.target.value) || 0)}
+          style={{ 
+            width: '63px', 
+            padding: '2px 5px', 
+            border: '1px solid #ddd',
+            borderRadius: '3px',
+            textAlign: 'center'
+          }} 
+        />
+        <span style={{ marginLeft: '5px' }}>%</span>
+      </>
+    )}
+  </div>
+  <span>{useTax ? taxAmount.toFixed(2) : '0.00'}</span>
+</div>
             
+<div style={{ 
+  display: 'flex', 
+  justifyContent: 'space-between', 
+  alignItems: 'center',
+  padding: '10px 0', 
+  borderBottom: '1px solid #eee' 
+}}>
+  <div style={{ display: 'flex', alignItems: 'center' }}>
+    <input
+      type="checkbox"
+      checked={useTaxFixed}
+      onChange={() => setUseTaxFixed(!useTaxFixed)}
+      style={{ marginRight: '10px' }}
+    />
+    <span style={{ marginRight: '10px' }}>Tax Fixed</span>
+  </div>
+  <span>{useTaxFixed ? taxFixed.toFixed(2) : '0.00'}</span>
+</div>
+
+
             <div style={{ 
               display: 'flex', 
               justifyContent: 'space-between', 
@@ -461,10 +522,24 @@ ${Object.entries(paymentValues)
               <span>{total.toFixed(2)}</span>
             </div>
           </div>
+
+          
         </div>
+        <div style={{ width: '100%',marginTop:'10px'}}>
+            <div style={{ marginTop: '20px' }}>
+              <h3 style={{ fontSize: '14px', fontWeight: '500', marginBottom: '10px' }}>Terms & Conditions</h3>
+              <p style={{ 
+                fontSize: '13px', 
+                color: '#666', 
+                fontStyle: 'italic', 
+                lineHeight: '1.5' 
+              }}>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              </p>
+            </div>
+          </div>
       </div>
       
-      {/* Download Invoice Button */}
       <div style={{ marginTop: '30px', textAlign: 'center' }}>
         <button 
           onClick={downloadPDF}
@@ -489,3 +564,6 @@ ${Object.entries(paymentValues)
     </div>
   );
 }
+
+
+
